@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite has no enums, so the string fields below are constrained in
+// src/lib/constants.ts instead.
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         String   @default("PILGRIM") // PILGRIM | PROVIDER | TRANSPORT | ADMIN
+  createdAt    DateTime @default(now())
+
+  provider          Provider?
+  packageBookings   PackageBooking[]
+  transportBookings TransportBooking[]
+  posts             Post[]
+  comments          Comment[]
+  votes             Vote[]
+}
+
+model Provider {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String // UMRAH | TRANSPORT
+  companyName String
+  description String   @default("")
+  country     String   @default("")
+  city        String   @default("")
+  phone       String   @default("")
+  licenseNo   String   @default("")
+  status      String   @default("PENDING") // PENDING | APPROVED | SUSPENDED
+  createdAt   DateTime @default(now())
+
+  packages Package[]
+  services TransportService[]
+}
+
+model Package {
+  id            String   @id @default(cuid())
+  providerId    String
+  provider      Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  title         String
+  description   String
+  departureCity String
+  departureDate DateTime
+  durationDays  Int
+  makkahHotel   String
+  makkahNights  Int
+  madinahHotel  String   @default("")
+  madinahNights Int      @default(0)
+  hotelStars    Int      @default(3)
+  priceCents    Int // per person
+  seatsTotal    Int
+  incFlights    Boolean  @default(false)
+  incVisa       Boolean  @default(false)
+  incMeals      Boolean  @default(false)
+  incTransport  Boolean  @default(false)
+  incZiyarah    Boolean  @default(false)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  bookings PackageBooking[]
+
+  @@index([providerId])
+}
+
+model PackageBooking {
+  id              String   @id @default(cuid())
+  packageId       String
+  package         Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  travellers      Int
+  contactPhone    String
+  notes           String   @default("")
+  totalCents      Int
+  commissionCents Int // platform fee, fixed at booking time
+  status          String   @default("PENDING") // PENDING | CONFIRMED | COMPLETED | CANCELLED
+  createdAt       DateTime @default(now())
+
+  @@index([packageId])
+  @@index([userId])
+}
+
+model TransportService {
+  id          String   @id @default(cuid())
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  vehicleType String // SEDAN | SUV | VAN | BUS
+  capacity    Int
+  fromPlace   String
+  toPlace     String
+  priceCents  Int // per trip, per vehicle
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  bookings TransportBooking[]
+
+  @@index([providerId])
+}
+
+model TransportBooking {
+  id              String           @id @default(cuid())
+  serviceId       String
+  service         TransportService @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pickupAt        DateTime
+  pickupLocation  String
+  passengers      Int
+  contactPhone    String
+  notes           String           @default("")
+  totalCents      Int
+  commissionCents Int
+  status          String           @default("PENDING")
+  createdAt       DateTime         @default(now())
+
+  @@index([serviceId])
+  @@index([userId])
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  topic     String
+  title     String
+  body      String
+  score     Int      @default(0) // sum of votes, kept in sync by the vote action
+  createdAt DateTime @default(now())
+
+  comments Comment[]
+  votes    Vote[]
+
+  @@index([topic])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  postId    String
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  parentId  String?
+  parent    Comment?  @relation("Replies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("Replies")
+  body      String
+  createdAt DateTime  @default(now())
+
+  @@index([postId])
+}
+
+model Vote {
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  value  Int // +1 or -1
+
+  @@id([userId, postId])
+}
+
+model Setting {
+  key   String @id
+  value String
+}
