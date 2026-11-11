@@ -76,6 +76,7 @@ model Package {
   createdAt     DateTime @default(now())
 
   bookings PackageBooking[]
+  ads      Ad[]
 
   @@index([providerId])
 }
@@ -113,6 +114,7 @@ model TransportService {
   createdAt   DateTime @default(now())
 
   bookings TransportBooking[]
+  ads      Ad[]
 
   @@index([providerId])
 }
@@ -194,4 +196,24 @@ model VerificationCode {
   createdAt  DateTime  @default(now())
 
   @@index([identifier, createdAt])
+}
+
+// A paid advertising card shown in the rotating banner on the app's Home tab.
+model Ad {
+  id         String            @id @default(cuid())
+  advertiser String // who paid for it; shown as "Sponsored · <advertiser>"
+  headline   String
+  body       String            @default("")
+  cta        String            @default("View") // button label
+  // Where a tap leads: one of the advertiser's listings, or nowhere.
+  packageId  String?
+  package    Package?          @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  serviceId  String?
+  service    TransportService? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  theme      String            @default("green") // green | gold | night
+  active     Boolean           @default(true)
+  startsAt   DateTime?
+  endsAt     DateTime?
+  clicks     Int               @default(0)
+  createdAt  DateTime          @default(now())
 }

@@ -11,7 +11,7 @@ const fee = (total, pct) => Math.round((total * pct) / 100);
 async function main() {
   if (process.env.NODE_ENV === "production") throw new Error("Refusing to seed a production database.");
 
-  for (const model of ["verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
+  for (const model of ["ad", "verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
     await db[model].deleteMany();
   }
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
@@ -96,7 +96,7 @@ async function main() {
     incTransport: true,
     incZiyarah: true,
   });
-  await pkg(noor.provider.id, {
+  const premium = await pkg(noor.provider.id, {
     title: "14-day Premium Umrah, Clock Tower stay",
     description:
       "Stay steps from the Haram with half-board dining and private transfers throughout. Limited to a small group with a dedicated guide.",
@@ -159,7 +159,7 @@ async function main() {
     toPlace: "Makkah",
     priceCents: 7500,
   });
-  await svc({
+  const suv = await svc({
     title: "Makkah to Madinah — family SUV",
     description: "Door-to-door GMC Yukon with room for luggage. Stops on request.",
     vehicleType: "SUV",
@@ -185,6 +185,14 @@ async function main() {
     fromPlace: "Jeddah Airport (JED)",
     toPlace: "Makkah",
     priceCents: 42000,
+  });
+
+  await db.ad.createMany({
+    data: [
+      { advertiser: "Noor Travel", headline: "Stay steps from the Haram", body: "14 days, 5★ hotels, half-board. Small group with a dedicated guide.", cta: "See package", packageId: premium.id, theme: "green" },
+      { advertiser: "Haramain Rides", headline: "Makkah ⇄ Madinah, door to door", body: "Private family SUV with room for all your luggage.", cta: "Book a ride", serviceId: suv.id, theme: "night" },
+      { advertiser: "Safa Journeys", headline: "School holiday family Umrah", body: "Family rooms and a children's programme in Madinah.", cta: "See package", packageId: family.id, theme: "gold" },
+    ],
   });
 
   await db.packageBooking.create({

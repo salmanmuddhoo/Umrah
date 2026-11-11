@@ -135,3 +135,15 @@ export type Meta = {
   topics: { slug: string; label: string }[];
   vehicleTypes: { value: string; label: string }[];
 };
+
+export type Ad = {
+  id: string;
+  advertiser: string;
+  headline: string;
+  body: string;
+  cta: string;
+  theme: string;
+  /** The listing a tap opens; both null for a display-only ad. */
+  packageId: string | null;
+  serviceId: string | null;
+};

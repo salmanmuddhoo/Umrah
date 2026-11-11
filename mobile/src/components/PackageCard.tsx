@@ -1,16 +1,17 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { inclusions } from '@/lib/constants';
 import { date, money, plural } from '@/lib/format';
 import type { Package } from '@/lib/types';
 import { colors, radius, space } from '@/theme';
 
+import { PressableScale } from './motion';
 import { Badge, Muted, Stars, styles } from './ui';
 
 export function PackageCard({ pkg, onPress }: { pkg: Package; onPress: () => void }) {
   const low = pkg.seatsLeft > 0 && pkg.seatsLeft <= 5;
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${pkg.title}, ${money(pkg.priceCents)} per person`} onPress={onPress} style={({ pressed }) => [card, pressed && styles.dim]}>
+    <PressableScale accessibilityRole="button" accessibilityLabel={`${pkg.title}, ${money(pkg.priceCents)} per person`} onPress={onPress} style={card}>
       <View style={head}>
         <Text style={{ color: colors.brand200, fontSize: 12 }}>
           {pkg.durationDays} days · from {pkg.departureCity}
@@ -44,7 +45,7 @@ export function PackageCard({ pkg, onPress }: { pkg: Package; onPress: () => voi
           </View>
         </View>
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }
 

@@ -26,3 +26,5 @@ export const TOPICS = [
 ] as const;
 
 export const DEFAULT_COMMISSION = { package: 8, transport: 10 };
+
+export const AD_THEMES = ["green", "gold", "night"] as const;

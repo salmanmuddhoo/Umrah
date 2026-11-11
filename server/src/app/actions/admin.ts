@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { ApiError } from "@/lib/errors";
+import { createAd } from "@/services/ads";
 import { validRate } from "@/lib/rules";
 import { fromFormData, str, type FormState } from "@/lib/validate";
 
@@ -30,4 +32,28 @@ export async function saveCommission(_prev: FormState, fd: FormData): Promise<Fo
   }
   revalidatePath("/admin", "layout");
   return { ok: "Commission rates saved. They apply to new bookings from now on." };
+}
+
+export async function saveAd(_prev: FormState, fd: FormData): Promise<FormState> {
+  await requireAdmin();
+  try {
+    await createAd(fromFormData(fd));
+  } catch (err) {
+    if (err instanceof ApiError) return { error: err.message };
+    throw err;
+  }
+  revalidatePath("/admin/ads");
+  return { ok: "Ad created. It is now in rotation on the app's Home tab (within its dates)." };
+}
+
+export async function setAdActive(adId: string, active: boolean) {
+  await requireAdmin();
+  await db.ad.updateMany({ where: { id: adId }, data: { active } });
+  revalidatePath("/admin/ads");
+}
+
+export async function deleteAd(adId: string) {
+  await requireAdmin();
+  await db.ad.deleteMany({ where: { id: adId } });
+  revalidatePath("/admin/ads");
 }

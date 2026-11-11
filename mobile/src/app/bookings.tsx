@@ -84,7 +84,7 @@ export default function BookingsScreen() {
         ))
       )}
 
-      {data.packages.length + data.transport.length === 0 ? <Button title="Browse packages" onPress={() => router.replace('/')} /> : null}
+      {data.packages.length + data.transport.length === 0 ? <Button title="Browse packages" onPress={() => router.replace('/umrah')} /> : null}
     </Screen>
   );
 }

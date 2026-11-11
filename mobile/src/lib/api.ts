@@ -1,4 +1,5 @@
 import type {
+  Ad,
   CodeConfirmed,
   CodeSent,
   Comment,
@@ -92,6 +93,9 @@ export function createApi(config: Config) {
     verifyPin: (pin: string) => post<{ ok: boolean }>('/auth/pin/verify', { pin }),
     me: () => get<{ user: User }>('/me'),
     meta: () => get<Meta>('/meta'),
+
+    ads: () => get<Ad[]>('/ads'),
+    adClick: (adId: string) => post<{ ok: boolean }>(`/ads/${id(adId)}/click`),
 
     packages: (filters: { q?: string; max?: string; stars?: string; sort?: string } = {}) => get<Package[]>(`/packages${queryString(filters)}`),
     package: (pkgId: string) => get<Package>(`/packages/${id(pkgId)}`),

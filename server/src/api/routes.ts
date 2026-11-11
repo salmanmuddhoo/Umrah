@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { TOPICS, VEHICLE_LABELS, VEHICLE_TYPES } from "@/lib/constants";
 import { getCommissionRates } from "@/lib/settings";
 import type { Input } from "@/lib/validate";
+import * as ads from "@/services/ads";
 import * as auth from "@/services/auth";
 import * as bookings from "@/services/bookings";
 import * as catalog from "@/services/catalog";
@@ -41,6 +42,10 @@ open("GET", "/meta", async () => ({
   topics: TOPICS,
   vehicleTypes: VEHICLE_TYPES.map((value) => ({ value, label: VEHICLE_LABELS[value] })),
 }));
+
+// Home screen advertising
+open("GET", "/ads", () => ads.activeAds());
+open("POST", "/ads/:id/click", ({ params }) => ads.recordClick(params.id));
 
 // Catalogue
 open("GET", "/packages", ({ query }) => catalog.listPackages(query));

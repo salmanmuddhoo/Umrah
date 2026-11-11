@@ -1,19 +1,20 @@
-import { Pressable, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { vehicleLabel } from '@/lib/constants';
 import { money, plural } from '@/lib/format';
 import type { Service } from '@/lib/types';
 import { colors, space } from '@/theme';
 
+import { PressableScale } from './motion';
 import { Badge, Muted, styles } from './ui';
 
 export function ServiceCard({ service, onPress }: { service: Service; onPress: () => void }) {
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityLabel={`${service.title}, ${money(service.priceCents)} per trip`}
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.dim]}>
+      style={styles.card}>
       <View style={[styles.row, { alignItems: 'flex-start', justifyContent: 'space-between' }]}>
         <Text style={{ flex: 1, fontSize: 16, fontWeight: '600', color: colors.brand900 }}>{service.title}</Text>
         <Badge tone="gold">{vehicleLabel(service.vehicleType)}</Badge>
@@ -29,6 +30,6 @@ export function ServiceCard({ service, onPress }: { service: Service; onPress: (
           <Muted style={{ textAlign: 'right' }}>per trip</Muted>
         </View>
       </View>
-    </Pressable>
+    </PressableScale>
   );
 }

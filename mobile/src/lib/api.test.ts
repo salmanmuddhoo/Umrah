@@ -124,6 +124,13 @@ describe('createApi', () => {
     expect(onUnauthorized).not.toHaveBeenCalled();
   });
 
+  it('loads ads and reports taps on them', async () => {
+    const { api, calls } = setup(200, []);
+    await api.ads();
+    await api.adClick('ad 1');
+    expect(calls.map((c) => `${c.init.method} ${c.url.replace('https://api.test/api/v1', '')}`)).toEqual(['GET /ads', 'POST /ads/ad%201/click']);
+  });
+
   it('explains when the server cannot be reached', async () => {
     const fetch = jest.fn().mockRejectedValue(new TypeError('Network request failed')) as unknown as typeof globalThis.fetch;
     const api = createApi({ baseUrl: 'https://api.test', getToken: () => null, fetch });

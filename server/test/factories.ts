@@ -4,6 +4,7 @@ import { USER_SELECT as SELECT, type SessionUser } from "@/lib/auth";
 let n = 0;
 
 export async function resetDb() {
+  await db.ad.deleteMany();
   await db.verificationCode.deleteMany();
   await db.vote.deleteMany();
   await db.comment.deleteMany();

@@ -11,7 +11,7 @@ import { colors, space } from '@/theme';
 
 const TYPES = [{ value: '', label: 'Any vehicle' }, ...VEHICLE_TYPES] as const;
 
-export default function TransportScreen() {
+export function TransportList() {
   const { api } = useAuth();
   const [text, setText] = useState('');
   const [q, setQ] = useState('');

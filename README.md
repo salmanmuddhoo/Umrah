@@ -11,21 +11,26 @@ server/   The API the app talks to, plus the platform owner's admin console (web
 
 | Tab / area | What is in it | Who |
 | --- | --- | --- |
-| Packages | Search, filter and book Umrah packages; seats are tracked so a package cannot be oversold | Everyone (sign in to book) |
-| Transport | Book airport transfers, intercity rides and ziyarah tours | Everyone (sign in to book) |
-| Guide | Ihram, tawaf, sa'i and halq step by step, with duas in Arabic, transliteration and meaning. Bundled in the app, so it works offline | Everyone |
+| Home | Shortcut cards to every service, a rotating banner of sponsored cards from suppliers, and the next departures | Everyone |
+| Umrah → Packages | Search, filter and book Umrah packages; seats are tracked so a package cannot be oversold | Everyone (sign in to book) |
+| Umrah → Transport | Book airport transfers, intercity rides and ziyarah tours | Everyone (sign in to book) |
+| Umrah → How to perform | Ihram, tawaf, sa'i and halq step by step, with duas in Arabic, transliteration and meaning. Bundled in the app, so it works offline | Everyone |
+| Umrah → Visa | Which visa routes exist, how to apply step by step, and links to the official Saudi sources. Bundled in the app | Everyone |
 | Community | Topics, posts, up/down votes and threaded replies | Everyone (sign in to post) |
 | Account → Sign in / sign up | Email address or phone number → 6-digit code (by email, or WhatsApp for phone numbers) → choose a 4-digit PIN. The PIN is asked for every time the app is opened | Everyone |
 | Account → My bookings | Track and cancel bookings | Signed-in users |
 | Account → Provider dashboard | Earnings, listings (create / edit / hide), incoming bookings (confirm / decline / complete), company profile | Umrah and transport providers |
 
-The platform owner's back office is a small web console served by `server/` at `/admin`: revenue, commission owed per provider, approving or suspending providers, and setting commission rates.
+Cards and sections animate in, buttons respond to touch, and the ad banner rotates on its own; all of it switches off when the phone is set to reduce motion.
+
+The platform owner's back office is a small web console served by `server/` at `/admin`: revenue, commission owed per provider, approving or suspending providers, setting commission rates, and managing the Home tab's advertising.
 
 ### How the money works
 
 - Listing is free. The platform takes a percentage of each booking (default 8% for packages, 10% for transport), editable in the admin console.
 - The commission is fixed on the booking when it is made, so later rate changes never alter existing bookings.
 - Only confirmed and completed bookings count as revenue.
+- **Advertising** is a second income stream. In the admin console (`/admin/ads`) you create a sponsored card for a supplier — headline, text, colour, optional start and end dates, and the package or transport service it opens. Up to 10 rotate on the app's Home tab, each marked “Sponsored”, and the console shows how many taps each has had. What you charge is agreed with the supplier outside the app.
 - **No online payment is taken yet.** A booking is a request; the provider confirms it and collects payment directly, and the admin console shows what each provider owes. Taking payment in the app is the natural next step.
 
 New providers start as pending, and their listings stay hidden until an admin approves them.
@@ -82,8 +87,8 @@ How sign-in is protected:
 ## Tests
 
 ```bash
-cd server && npm test    # 146 tests: business rules, validation, API routing, sign-in (codes, PINs, lockout), and every service against a throwaway SQLite database
-cd mobile && npm test    # 131 tests: API client, validation, formatting, comment threading, sign-in flow, PIN pad, app lock, components
+cd server && npm test    # 161 tests: business rules, validation, API routing, sign-in (codes, PINs, lockout), advertising, and every service against a throwaway SQLite database
+cd mobile && npm test    # 165 tests: API client, validation, formatting, comment threading, sign-in flow, PIN pad, app lock, Home, ad banner, animations, guide and visa content
 ```
 
 Both suites, plus lint and type checks, run on every pull request and on `production` through GitHub Actions (`.github/workflows/ci.yml`).
@@ -132,5 +137,5 @@ iOS builds need a Mac and an Apple Developer account, so they are not part of th
 - Add online payments and push/email notifications for booking events.
 - Add per-IP rate limiting in front of the API (codes and PINs are already limited per account) and limits on posting, and reporting tools for the community (both app stores require a way to report and block user content).
 - Replace the typed date and time fields with native pickers.
-- Have the Umrah guide reviewed by a qualified scholar.
+- Have the Umrah guide reviewed by a qualified scholar, and re-check the visa guide (`mobile/src/lib/visa.ts`) against the official Saudi sources — entry rules change often, and the guide shows its last-reviewed date to readers.
 - There is no admin sign-up. `npm run db:seed` creates the demo admin; for a real deployment create a user in the database with `role` `ADMIN`, an `email`, and a bcrypt `passwordHash`.

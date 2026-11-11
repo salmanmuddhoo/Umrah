@@ -23,9 +23,8 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: '#64748b',
         sceneStyle: { backgroundColor: colors.sand },
       }}>
-      <Tabs.Screen name="index" options={{ title: 'Packages', headerTitle: 'My Ummah', tabBarIcon: icon('airplane') }} />
-      <Tabs.Screen name="transport" options={{ title: 'Transport', tabBarIcon: icon('car') }} />
-      <Tabs.Screen name="guide" options={{ title: 'Guide', headerTitle: 'How to perform Umrah', tabBarIcon: icon('book') }} />
+      <Tabs.Screen name="index" options={{ title: 'Home', headerTitle: 'My Ummah', tabBarIcon: icon('home') }} />
+      <Tabs.Screen name="umrah" options={{ title: 'Umrah', tabBarIcon: icon('moon') }} />
       <Tabs.Screen name="community" options={{ title: 'Community', tabBarIcon: icon('chatbubbles') }} />
       <Tabs.Screen name="account" options={{ title: 'Account', tabBarIcon: icon('person') }} />
     </Tabs>
