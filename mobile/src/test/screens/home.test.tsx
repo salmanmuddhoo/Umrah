@@ -46,7 +46,6 @@ describe('HomeScreen', () => {
     ['Transport', 'transport'],
     ['How to perform Umrah', 'guide'],
     ['Visa guide', 'visa'],
-    ['Umrah planner', 'planner'],
     ['Zamzam water', 'zamzam'],
   ])('%s opens the Umrah tab on the %s section', async (title, section) => {
     await setup();
@@ -61,6 +60,12 @@ describe('HomeScreen', () => {
     expect(await screen.findByLabelText(`Today is ${today.hijriText}, ${today.gregorianText}`)).toBeTruthy();
     expect(screen.getByText(`${today.hijriMonth} ${today.hijriYear}`)).toBeTruthy();
     expect(screen.getByText(today.gregorianText)).toBeTruthy();
+  });
+
+  it('opens the planner tab from its shortcut', async () => {
+    await setup();
+    await fireEvent.press(screen.getByRole('button', { name: 'Umrah planner' }));
+    expect(router.navigate).toHaveBeenCalledWith('/planner');
   });
 
   it('sends a signed-out visitor to sign in before showing bookings', async () => {

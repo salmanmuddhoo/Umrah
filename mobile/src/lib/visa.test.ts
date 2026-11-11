@@ -1,4 +1,4 @@
-import { UMRAH_SECTIONS, parseSection } from './umrah';
+import { firstSection, groupOf, parseSection, UMRAH_GROUPS } from './umrah';
 import { VISA_GOOD_TO_KNOW, VISA_OFFICIAL_LINKS, VISA_REVIEWED, VISA_ROUTES, VISA_STEPS } from './visa';
 
 describe('visa guide content', () => {
@@ -34,13 +34,33 @@ describe('visa guide content', () => {
   });
 });
 
-describe('parseSection', () => {
-  it('accepts each Umrah section', () => {
-    for (const { value } of UMRAH_SECTIONS) expect(parseSection(value)).toBe(value);
+describe('Umrah sections', () => {
+  const group = (value: string) => UMRAH_GROUPS.find((g) => g.value === value)!.sections.map((s) => s.value);
+
+  it('keeps bookable services apart from the guides', () => {
+    expect(group('services')).toEqual(['packages', 'transport']);
+    expect(group('guides')).toEqual(['guide', 'visa', 'zamzam']);
   });
-  it('falls back to packages for anything else', () => {
+
+  it('knows which group each section belongs to', () => {
+    expect(groupOf('transport').value).toBe('services');
+    expect(groupOf('zamzam').value).toBe('guides');
+  });
+
+  it('opens a group on its first section', () => {
+    expect(firstSection('services')).toBe('packages');
+    expect(firstSection('guides')).toBe('guide');
+    expect(firstSection('nonsense')).toBe('packages');
+  });
+
+  it('accepts each section from the route', () => {
+    for (const g of UMRAH_GROUPS) for (const { value } of g.sections) expect(parseSection(value)).toBe(value);
+  });
+
+  it('falls back to packages for anything else, including the planner, which has its own tab now', () => {
     expect(parseSection(undefined)).toBe('packages');
     expect(parseSection('hajj')).toBe('packages');
+    expect(parseSection('planner')).toBe('packages');
     expect(parseSection(['visa', 'guide'])).toBe('visa');
   });
 });

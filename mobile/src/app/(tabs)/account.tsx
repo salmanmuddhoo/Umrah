@@ -31,7 +31,7 @@ export default function AccountScreen() {
       </Card>
 
       <Button title="My bookings" onPress={() => router.push('/bookings')} />
-      <Button title="My Umrah planner" variant="ghost" onPress={() => router.navigate({ pathname: '/umrah', params: { section: 'planner' } })} />
+      <Button title="My Umrah planner" variant="ghost" onPress={() => router.navigate('/planner')} />
 
       {user.provider ? (
         <Card style={{ marginTop: 8 }}>
