@@ -19,7 +19,7 @@ function Bullets({ items }: { items: string[] }) {
 }
 
 /** The guide ships inside the app, so it works without a connection — including in the Haram. */
-export default function GuideScreen() {
+export function GuideContent() {
   return (
     <Screen>
       <Body>
