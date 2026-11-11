@@ -1,10 +1,10 @@
 import "server-only";
-import { signToken, type SessionUser } from "@/lib/auth";
+import { signToken, USER_SELECT, type SessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { TOPICS, VEHICLE_LABELS, VEHICLE_TYPES } from "@/lib/constants";
 import { getCommissionRates } from "@/lib/settings";
 import type { Input } from "@/lib/validate";
-import { checkCredentials, registerUser } from "@/services/auth";
+import * as auth from "@/services/auth";
 import * as bookings from "@/services/bookings";
 import * as catalog from "@/services/catalog";
 import * as community from "@/services/community";
@@ -22,15 +22,18 @@ const open = (method: Method, pattern: string, handler: Handler) => routes.push(
 const authed = (method: Method, pattern: string, handler: (ctx: AuthedCtx) => Promise<unknown>) =>
   routes.push({ method, pattern, handler: handler as Handler, auth: true });
 
-const USER = { id: true, name: true, email: true, role: true, provider: true } as const;
 async function session(userId: string) {
-  const user = await db.user.findUniqueOrThrow({ where: { id: userId }, select: USER });
+  const user = await db.user.findUniqueOrThrow({ where: { id: userId }, select: USER_SELECT });
   return { token: await signToken(userId), user };
 }
 
-// Accounts
-open("POST", "/auth/register", async ({ body }) => session(await registerUser(body)));
-open("POST", "/auth/login", async ({ body }) => session((await checkCredentials(body)).id));
+// Accounts: code by email or WhatsApp → verification token → PIN. See src/services/auth.ts.
+open("POST", "/auth/start", ({ body }) => auth.startVerification(body));
+open("POST", "/auth/verify", ({ body }) => auth.confirmCode(body));
+open("POST", "/auth/register", async ({ body }) => session(await auth.registerUser(body)));
+open("POST", "/auth/login", async ({ body }) => session(await auth.loginWithPin(body)));
+open("POST", "/auth/reset-pin", async ({ body }) => session(await auth.resetPin(body)));
+authed("POST", "/auth/pin/verify", ({ user, body }) => auth.verifyPin(user.id, body));
 authed("GET", "/me", async ({ user }) => ({ user }));
 
 open("GET", "/meta", async () => ({

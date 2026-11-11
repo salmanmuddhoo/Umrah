@@ -15,7 +15,9 @@ export type Provider = {
   status: 'PENDING' | 'APPROVED' | 'SUSPENDED';
 };
 
-export type User = { id: string; name: string; email: string; role: string; provider: Provider | null };
+export type User = { id: string; name: string; email: string | null; phone: string | null; role: string; provider: Provider | null };
+export type CodeSent = { channel: 'email' | 'whatsapp'; destination: string; devCode?: string };
+export type CodeConfirmed = { verificationToken: string; accountExists: boolean };
 export type Session = { token: string; user: User };
 
 export type PublicProvider = Pick<Provider, 'id' | 'companyName' | 'description' | 'city' | 'country' | 'licenseNo'>;
@@ -92,7 +94,8 @@ export type ProviderBooking = {
   createdAt: string;
   title: string;
   customerName: string;
-  customerEmail: string;
+  /** The customer's sign-in email or phone number. */
+  customerContact: string;
   contactPhone: string;
   notes: string;
   totalCents: number;

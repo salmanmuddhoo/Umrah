@@ -39,7 +39,7 @@ export const service: Service = {
   provider,
 };
 
-export const user: User = { id: 'u1', name: 'Aisha Rahman', email: 'aisha@example.com', role: 'PILGRIM', provider: null };
+export const user: User = { id: 'u1', name: 'Aisha Rahman', email: 'aisha@example.com', phone: null, role: 'PILGRIM', provider: null };
 
 export const comment = (id: string, parentId: string | null = null): Comment => ({
   id,

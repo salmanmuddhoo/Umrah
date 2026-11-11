@@ -20,16 +20,8 @@ export function isTime(v: string) {
   return !!m && Number(m[1]) < 24 && Number(m[2]) < 60;
 }
 
-export function validateLogin(f: { email: string; password: string }) {
-  if (!isEmail(f.email)) return 'Enter your email address.';
-  if (!f.password) return 'Enter your password.';
-  return null;
-}
-
-export function validateRegister(f: { name: string; email: string; password: string; as: string; companyName: string }) {
+export function validateSignUp(f: { name: string; as: string; companyName: string }) {
   if (f.name.trim().length < 2) return 'Please enter your name.';
-  if (!isEmail(f.email)) return 'Please enter a valid email address.';
-  if (f.password.length < 8) return 'Password must be at least 8 characters.';
   if (f.as !== 'pilgrim' && f.companyName.trim().length < 2) return 'Please enter your company name.';
   return null;
 }

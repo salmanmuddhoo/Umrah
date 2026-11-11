@@ -132,6 +132,6 @@ describe("provider back office", () => {
     });
     const rows = await provider.providerBookings(owner);
     expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({ kind: "transport", title: "Test transfer", customerEmail: pilgrim.email, pickupLocation: "Terminal 1" });
+    expect(rows[0]).toMatchObject({ kind: "transport", title: "Test transfer", customerContact: pilgrim.email, pickupLocation: "Terminal 1" });
   });
 });

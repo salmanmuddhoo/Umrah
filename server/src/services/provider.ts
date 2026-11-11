@@ -195,7 +195,7 @@ export async function deleteService(user: SessionUser, id: string) {
 /** Every booking on this provider's listings, newest first, in one shape for both provider types. */
 export async function providerBookings(user: SessionUser) {
   const provider = providerOf(user);
-  const customer = { select: { name: true, email: true } };
+  const customer = { select: { name: true, email: true, phone: true } };
 
   if (provider.type === "UMRAH") {
     const rows = await db.packageBooking.findMany({
@@ -209,7 +209,7 @@ export async function providerBookings(user: SessionUser) {
       title: p.title,
       departureDate: p.departureDate,
       customerName: u.name,
-      customerEmail: u.email,
+      customerContact: u.email ?? u.phone ?? "",
     }));
   }
   const rows = await db.transportBooking.findMany({
@@ -222,6 +222,6 @@ export async function providerBookings(user: SessionUser) {
     kind: "transport" as const,
     title: s.title,
     customerName: u.name,
-    customerEmail: u.email,
+    customerContact: u.email ?? u.phone ?? "",
   }));
 }

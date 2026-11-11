@@ -11,7 +11,7 @@ export default async function AdminProviders() {
   const providers = (
     await db.provider.findMany({
       orderBy: { createdAt: "desc" },
-      include: { user: { select: { name: true, email: true } }, _count: { select: { packages: true, services: true } } },
+      include: { user: { select: { name: true, email: true, phone: true } }, _count: { select: { packages: true, services: true } } },
     })
   ).sort((a, b) => ORDER.indexOf(a.status) - ORDER.indexOf(b.status));
 
@@ -30,7 +30,7 @@ export default async function AdminProviders() {
                   <span className="badge bg-gold-100 text-gold-600">{p.type === "UMRAH" ? "Umrah" : "Transport"}</span>
                 </p>
                 <p className="text-slate-600">
-                  {p.user.name} · {p.user.email}
+                  {p.user.name} · {p.user.email ?? p.user.phone}
                   {p.phone && ` · ${p.phone}`}
                 </p>
                 <p className="text-xs text-slate-500">

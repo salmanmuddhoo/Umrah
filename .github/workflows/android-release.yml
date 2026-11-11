@@ -1,0 +1,142 @@
+name: Android release
+
+# Builds the Android app.
+#   push to `production`      → signed release build (.aab for Google Play + .apk), strict about configuration
+#   pull request → production → verification build, so a broken app is caught before it is merged
+#   manual run                → same as a push, from the Actions tab
+#
+# Configure once under Settings → Secrets and variables → Actions (see README "Releasing the Android app"):
+#   variable  API_URL                       https address of the deployed server
+#   secrets   ANDROID_KEYSTORE_BASE64       base64 of the upload keystore (.jks)
+#             ANDROID_KEYSTORE_PASSWORD
+#             ANDROID_KEY_ALIAS
+#             ANDROID_KEY_PASSWORD
+
+on:
+  push:
+    branches: [production]
+    paths: ["mobile/**", ".github/workflows/android-release.yml"]
+  pull_request:
+    branches: [production]
+    paths: ["mobile/**", ".github/workflows/android-release.yml"]
+  workflow_dispatch:
+
+concurrency:
+  group: android-release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Android app
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: mobile
+    env:
+      IS_RELEASE: ${{ github.event_name != 'pull_request' }}
+      EXPO_PUBLIC_API_URL: ${{ vars.API_URL }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check release configuration
+        run: |
+          problems=0
+          problem() {
+            if [ "$IS_RELEASE" = "true" ]; then echo "::error::$1"; problems=1; else echo "::warning::$1 (allowed for a verification build)"; fi
+            echo "- ⚠️ $1" >> "$GITHUB_STEP_SUMMARY"
+          }
+          case "$EXPO_PUBLIC_API_URL" in
+            https://*) ;;
+            "") problem "The API_URL variable is not set, so the app would not know where the server is." ;;
+            *) problem "API_URL must start with https:// — Android release builds refuse plain http." ;;
+          esac
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ] || [ -z "$ANDROID_KEYSTORE_PASSWORD" ] || [ -z "$ANDROID_KEY_ALIAS" ] || [ -z "$ANDROID_KEY_PASSWORD" ]; then
+            problem "The Android signing secrets are not all set, so the build cannot be signed for Google Play."
+            echo "SIGNED=false" >> "$GITHUB_ENV"
+          else
+            echo "SIGNED=true" >> "$GITHUB_ENV"
+          fi
+          exit $problems
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - run: npm ci
+
+      # Never ship a build whose tests fail.
+      - run: npm run typecheck
+      - run: npm test
+
+      - name: Set version code
+        # Google Play needs a number that rises with every upload; the run number does exactly that.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const config = JSON.parse(fs.readFileSync("app.json", "utf8"));
+            config.expo.android.versionCode = Number(process.env.GITHUB_RUN_NUMBER);
+            fs.writeFileSync("app.json", JSON.stringify(config, null, 2));
+            fs.appendFileSync(process.env.GITHUB_ENV, `APP_VERSION=${config.expo.version}\n`);
+          '
+
+      - name: Generate the native Android project
+        run: npx expo prebuild --platform android --no-install
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build
+        working-directory: mobile/android
+        run: |
+          args=()
+          if [ "$SIGNED" = "true" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/upload.jks"
+            args+=(
+              "-Pandroid.injected.signing.store.file=$RUNNER_TEMP/upload.jks"
+              "-Pandroid.injected.signing.store.password=$ANDROID_KEYSTORE_PASSWORD"
+              "-Pandroid.injected.signing.key.alias=$ANDROID_KEY_ALIAS"
+              "-Pandroid.injected.signing.key.password=$ANDROID_KEY_PASSWORD"
+            )
+          fi
+          if [ "$IS_RELEASE" = "true" ]; then
+            ./gradlew bundleRelease assembleRelease --no-daemon "${args[@]}"
+          else
+            # Verification only: one CPU architecture and no store bundle keeps pull requests quick.
+            ./gradlew assembleRelease --no-daemon -PreactNativeArchitectures=arm64-v8a "${args[@]}"
+          fi
+
+      - name: Remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/upload.jks"
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-ummah-android-${{ env.APP_VERSION }}-build${{ github.run_number }}${{ env.SIGNED != 'true' && '-UNSIGNED-test-only' || '' }}
+          if-no-files-found: error
+          retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
+          path: |
+            mobile/android/app/build/outputs/bundle/release/*.aab
+            mobile/android/app/build/outputs/apk/release/*.apk
+
+      - name: Summary
+        run: |
+          {
+            echo "### My Ummah Android ${APP_VERSION} (build ${GITHUB_RUN_NUMBER})"
+            if [ "$IS_RELEASE" = "true" ]; then echo "Signed release build. Download the artifact below: upload the \`.aab\` to Google Play, or install the \`.apk\` directly on a phone.";
+            else echo "Verification build for this pull request. It is not for distribution."; fi
+          } >> "$GITHUB_STEP_SUMMARY"

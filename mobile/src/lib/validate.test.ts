@@ -3,11 +3,10 @@ import {
   isEmail,
   isPhone,
   isTime,
-  validateLogin,
   validatePackage,
   validatePackageBooking,
   validatePost,
-  validateRegister,
+  validateSignUp,
   validateService,
   validateTransportBooking,
   type PackageForm,
@@ -37,26 +36,17 @@ describe('field checks', () => {
   });
 });
 
-describe('validateLogin', () => {
-  it('needs an email and a password', () => {
-    expect(validateLogin({ email: 'a@b.co', password: 'x' })).toBeNull();
-    expect(validateLogin({ email: 'nope', password: 'x' })).toMatch(/email/);
-    expect(validateLogin({ email: 'a@b.co', password: '' })).toMatch(/password/);
-  });
-});
-
-describe('validateRegister', () => {
-  const base = { name: 'Aisha', email: 'a@b.co', password: 'password123', as: 'pilgrim', companyName: '' };
+describe('validateSignUp', () => {
+  const base = { name: 'Aisha', as: 'pilgrim', companyName: '' };
   it('accepts a pilgrim without a company', () => {
-    expect(validateRegister(base)).toBeNull();
+    expect(validateSignUp(base)).toBeNull();
   });
   it('requires a company name for providers only', () => {
-    expect(validateRegister({ ...base, as: 'umrah' })).toMatch(/company/);
-    expect(validateRegister({ ...base, as: 'transport', companyName: 'Haramain Rides' })).toBeNull();
+    expect(validateSignUp({ ...base, as: 'umrah' })).toMatch(/company/);
+    expect(validateSignUp({ ...base, as: 'transport', companyName: 'Haramain Rides' })).toBeNull();
   });
-  it('rejects short names and passwords', () => {
-    expect(validateRegister({ ...base, name: 'A' })).toMatch(/name/);
-    expect(validateRegister({ ...base, password: 'short' })).toMatch(/8 characters/);
+  it('rejects short names', () => {
+    expect(validateSignUp({ ...base, name: 'A' })).toMatch(/name/);
   });
 });
 
