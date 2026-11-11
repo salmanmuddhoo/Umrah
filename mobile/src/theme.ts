@@ -1,24 +1,29 @@
+/**
+ * Light grey surfaces with an indigo accent and a warm amber highlight.
+ * The `brand*` scale is the accent; change it here to recolour the whole app.
+ */
 export const colors = {
-  brand50: '#eef7f3',
-  brand100: '#d5ebe2',
-  brand200: '#a9d6c4',
-  brand600: '#167257',
-  brand700: '#0f5c47',
-  brand800: '#0b4737',
-  brand900: '#07352a',
-  gold100: '#f6ecd2',
-  gold400: '#d3a94a',
-  gold600: '#a67c1e',
-  sand: '#f8f5ee',
+  brand50: '#eef1fd',
+  brand100: '#e0e5fb',
+  brand200: '#c3cbf7',
+  brand600: '#4f56d3',
+  brand700: '#3f44b8',
+  brand800: '#33378f',
+  brand900: '#1f2257',
+  gold100: '#fdf0d5',
+  gold400: '#f5a524',
+  gold600: '#a15c00',
+  /** The page background. */
+  sand: '#f2f3f7',
   white: '#ffffff',
-  text: '#1c2622',
-  muted: '#64748b',
-  border: '#e2e8f0',
+  text: '#1b1d2a',
+  muted: '#667085',
+  border: '#e3e5ec',
   danger: '#b91c1c',
   dangerBg: '#fef2f2',
   amber: '#92400e',
   amberBg: '#fef3c7',
-  slateBg: '#e2e8f0',
+  slateBg: '#e4e7ec',
 } as const;
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 } as const;

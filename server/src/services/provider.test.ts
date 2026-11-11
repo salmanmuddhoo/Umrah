@@ -59,6 +59,35 @@ describe("provider back office", () => {
     await expect(provider.dashboard(pilgrim)).rejects.toMatchObject({ status: 403 });
   });
 
+  it("lets an existing member apply to provide any listed service, starting as pending", async () => {
+    const member = await makeUser();
+    const created = await provider.applyAsProvider(member, { type: "catering", companyName: "Madinah Kitchen", city: "Madinah" });
+    expect(created).toMatchObject({ type: "CATERING", companyName: "Madinah Kitchen", status: "PENDING" });
+    expect((await db.user.findUniqueOrThrow({ where: { id: member.id } })).role).toBe("PROVIDER");
+  });
+
+  it("rejects an application without a known service or a company name, or a second application", async () => {
+    const member = await makeUser();
+    await expect(provider.applyAsProvider(member, { type: "casino", companyName: "X Ltd" })).rejects.toMatchObject({ status: 400 });
+    await expect(provider.applyAsProvider(member, { type: "GUIDE", companyName: "" })).rejects.toMatchObject({ status: 400 });
+    await expect(provider.applyAsProvider(await makeProvider("UMRAH"), { type: "GUIDE", companyName: "Second Co" })).rejects.toMatchObject({ status: 409 });
+  });
+
+  it("does not turn an admin into an ordinary provider account", async () => {
+    const admin = await makeUser("ADMIN");
+    await provider.applyAsProvider(admin, { type: "OTHER", companyName: "Admin Co" });
+    expect((await db.user.findUniqueOrThrow({ where: { id: admin.id } })).role).toBe("ADMIN");
+  });
+
+  it("gives providers without listing tools an empty dashboard rather than an error", async () => {
+    const caterer = await makeProvider("CATERING");
+    const { stats } = await provider.dashboard(caterer);
+    expect(stats).toEqual({ listings: 0, pending: 0, confirmed: 0, grossCents: 0, commissionCents: 0, netCents: 0 });
+    expect(await provider.providerBookings(caterer)).toEqual([]);
+    await expect(provider.myPackages(caterer)).rejects.toMatchObject({ status: 403 });
+    await expect(provider.saveService(caterer, null, serviceForm)).rejects.toMatchObject({ status: 403 });
+  });
+
   it("keeps Umrah and transport providers out of each other's listings", async () => {
     const umrah = await makeProvider("UMRAH");
     const transport = await makeProvider("TRANSPORT");

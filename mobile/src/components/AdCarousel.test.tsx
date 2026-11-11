@@ -10,7 +10,7 @@ const ad = (id: string, overrides: Partial<Ad> = {}): Ad => ({
   headline: `Headline ${id}`,
   body: 'Flights and visa included.',
   cta: 'See package',
-  theme: 'green',
+  theme: 'brand',
   packageId: `pkg-${id}`,
   serviceId: null,
   ...overrides,

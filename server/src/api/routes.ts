@@ -1,14 +1,15 @@
 import "server-only";
 import { signToken, USER_SELECT, type SessionUser } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { TOPICS, VEHICLE_LABELS, VEHICLE_TYPES } from "@/lib/constants";
-import { getCommissionRates } from "@/lib/settings";
+import { PLAN_STAGES, PROVIDER_TYPES, TOPICS, VEHICLE_LABELS, VEHICLE_TYPES } from "@/lib/constants";
+import { getCommissionRates, getGuidePrices } from "@/lib/settings";
 import type { Input } from "@/lib/validate";
 import * as ads from "@/services/ads";
 import * as auth from "@/services/auth";
 import * as bookings from "@/services/bookings";
 import * as catalog from "@/services/catalog";
 import * as community from "@/services/community";
+import * as planner from "@/services/planner";
 import * as provider from "@/services/provider";
 import type { Method, Route } from "./router";
 
@@ -39,6 +40,9 @@ authed("GET", "/me", async ({ user }) => ({ user }));
 
 open("GET", "/meta", async () => ({
   commission: await getCommissionRates(),
+  prices: await getGuidePrices(),
+  providerTypes: PROVIDER_TYPES,
+  planStages: PLAN_STAGES,
   topics: TOPICS,
   vehicleTypes: VEHICLE_TYPES.map((value) => ({ value, label: VEHICLE_LABELS[value] })),
 }));
@@ -72,6 +76,7 @@ authed("DELETE", "/comments/:id", ({ user, params }) => community.deleteComment(
 
 // Provider back office
 authed("GET", "/provider", ({ user }) => provider.dashboard(user));
+authed("POST", "/provider/apply", ({ user, body }) => provider.applyAsProvider(user, body));
 authed("PUT", "/provider", ({ user, body }) => provider.updateProfile(user, body));
 authed("GET", "/provider/bookings", ({ user }) => provider.providerBookings(user));
 authed("GET", "/provider/packages", ({ user }) => provider.myPackages(user));
@@ -82,5 +87,15 @@ authed("GET", "/provider/services", ({ user }) => provider.myServices(user));
 authed("POST", "/provider/services", ({ user, body }) => provider.saveService(user, null, body));
 authed("PUT", "/provider/services/:id", ({ user, params, body }) => provider.saveService(user, params.id, body));
 authed("DELETE", "/provider/services/:id", ({ user, params }) => provider.deleteService(user, params.id));
+
+// Umrah planner
+authed("GET", "/plans", ({ user }) => planner.listPlans(user));
+authed("POST", "/plans", ({ user, body }) => planner.createPlan(user, body));
+authed("GET", "/plans/:id", ({ user, params }) => planner.getPlan(user, params.id));
+authed("PUT", "/plans/:id", ({ user, params, body }) => planner.updatePlan(user, params.id, body));
+authed("DELETE", "/plans/:id", ({ user, params }) => planner.deletePlan(user, params.id));
+authed("POST", "/plans/:id/items", ({ user, params, body }) => planner.addItem(user, params.id, body));
+authed("PUT", "/plan-items/:id", ({ user, params, body }) => planner.updateItem(user, params.id, body));
+authed("DELETE", "/plan-items/:id", ({ user, params }) => planner.deleteItem(user, params.id));
 
 export { routes };

@@ -73,6 +73,11 @@ describe("activeAds", () => {
     expect(await ads.activeAds()).toEqual([expect.objectContaining({ packageId: null })]);
   });
 
+  it("shows older green ads in the brand colour", async () => {
+    await ad({ theme: "green" });
+    expect((await ads.activeAds())[0].theme).toBe("brand");
+  });
+
   it("does not expose click counts or scheduling to the app", async () => {
     await ad();
     const [shown] = await ads.activeAds();

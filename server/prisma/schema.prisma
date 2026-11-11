@@ -31,13 +31,14 @@ model User {
   posts             Post[]
   comments          Comment[]
   votes             Vote[]
+  plans             Plan[]
 }
 
 model Provider {
   id          String   @id @default(cuid())
   userId      String   @unique
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type        String // UMRAH | TRANSPORT
+  type        String // one of PROVIDER_TYPES in src/lib/constants.ts (UMRAH, TRANSPORT, ACCOMMODATION, …)
   companyName String
   description String   @default("")
   country     String   @default("")
@@ -210,10 +211,40 @@ model Ad {
   package    Package?          @relation(fields: [packageId], references: [id], onDelete: SetNull)
   serviceId  String?
   service    TransportService? @relation(fields: [serviceId], references: [id], onDelete: SetNull)
-  theme      String            @default("green") // green | gold | night
+  theme      String            @default("brand") // brand | gold | night
   active     Boolean           @default(true)
   startsAt   DateTime?
   endsAt     DateTime?
   clicks     Int               @default(0)
   createdAt  DateTime          @default(now())
+}
+
+// A pilgrim's own Umrah planner: trip details plus a checklist they tick off.
+model Plan {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  departDate DateTime?
+  returnDate DateTime?
+  travellers Int       @default(1)
+  notes      String    @default("")
+  createdAt  DateTime  @default(now())
+
+  items PlanItem[]
+
+  @@index([userId])
+}
+
+model PlanItem {
+  id        String   @id @default(cuid())
+  planId    String
+  plan      Plan     @relation(fields: [planId], references: [id], onDelete: Cascade)
+  stage     String // one of PLAN_STAGES in src/lib/constants.ts
+  text      String
+  done      Boolean  @default(false)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([planId])
 }

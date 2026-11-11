@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { GUIDE_PRICES } from "@/lib/constants";
 import { ApiError } from "@/lib/errors";
 import { createAd } from "@/services/ads";
 import { validRate } from "@/lib/rules";
@@ -56,4 +57,16 @@ export async function deleteAd(adId: string) {
   await requireAdmin();
   await db.ad.deleteMany({ where: { id: adId } });
   revalidatePath("/admin/ads");
+}
+
+export async function saveGuidePrices(_prev: FormState, fd: FormData): Promise<FormState> {
+  await requireAdmin();
+  const input = fromFormData(fd);
+  for (const { key } of GUIDE_PRICES) {
+    const value = str(input, key, 160);
+    if (!value) return { error: "Every price needs some text. To say a price is unknown, write that." };
+    await db.setting.upsert({ where: { key: `price.${key}` }, create: { key: `price.${key}`, value }, update: { value } });
+  }
+  revalidatePath("/admin/prices");
+  return { ok: "Saved. The app shows the new prices the next time it is opened." };
 }

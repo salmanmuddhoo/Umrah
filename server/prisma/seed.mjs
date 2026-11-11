@@ -11,7 +11,7 @@ const fee = (total, pct) => Math.round((total * pct) / 100);
 async function main() {
   if (process.env.NODE_ENV === "production") throw new Error("Refusing to seed a production database.");
 
-  for (const model of ["ad", "verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
+  for (const model of ["planItem", "plan", "ad", "verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
     await db[model].deleteMany();
   }
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
@@ -189,7 +189,7 @@ async function main() {
 
   await db.ad.createMany({
     data: [
-      { advertiser: "Noor Travel", headline: "Stay steps from the Haram", body: "14 days, 5★ hotels, half-board. Small group with a dedicated guide.", cta: "See package", packageId: premium.id, theme: "green" },
+      { advertiser: "Noor Travel", headline: "Stay steps from the Haram", body: "14 days, 5★ hotels, half-board. Small group with a dedicated guide.", cta: "See package", packageId: premium.id, theme: "brand" },
       { advertiser: "Haramain Rides", headline: "Makkah ⇄ Madinah, door to door", body: "Private family SUV with room for all your luggage.", cta: "Book a ride", serviceId: suv.id, theme: "night" },
       { advertiser: "Safa Journeys", headline: "School holiday family Umrah", body: "Family rooms and a children's programme in Madinah.", cta: "See package", packageId: family.id, theme: "gold" },
     ],

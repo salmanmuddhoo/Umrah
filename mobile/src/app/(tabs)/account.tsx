@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 
 import { Body, Button, Card, H1, H2, Muted, QueryState, Screen, StatusBadge, styles } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
+import { providerTypeLabel } from '@/lib/constants';
 import { colors } from '@/theme';
 
 export default function AccountScreen() {
@@ -17,12 +18,7 @@ export default function AccountScreen() {
         <Button title="Sign in or create an account" onPress={() => router.push('/login')} />
         <Muted>Use your email address or phone number. We send a code by email or WhatsApp, then you choose a 4-digit PIN.</Muted>
 
-        <Card style={{ marginTop: 16, backgroundColor: colors.brand50 }}>
-          <Text style={{ fontSize: 16, fontWeight: '700', color: colors.brand900 }}>Umrah operator or transport company?</Text>
-          <Muted>List your packages or fleet for free and receive bookings from pilgrims worldwide. We only charge a commission on bookings you confirm.</Muted>
-          <Button title="Register as an Umrah provider" variant="ghost" onPress={() => router.push({ pathname: '/login', params: { as: 'umrah' } })} />
-          <Button title="Register as a transport provider" variant="ghost" onPress={() => router.push({ pathname: '/login', params: { as: 'transport' } })} />
-        </Card>
+        <ProviderInvite />
       </Screen>
     );
   }
@@ -35,6 +31,7 @@ export default function AccountScreen() {
       </Card>
 
       <Button title="My bookings" onPress={() => router.push('/bookings')} />
+      <Button title="My Umrah planner" variant="ghost" onPress={() => router.navigate({ pathname: '/umrah', params: { section: 'planner' } })} />
 
       {user.provider ? (
         <Card style={{ marginTop: 8 }}>
@@ -42,12 +39,25 @@ export default function AccountScreen() {
             <H2>{user.provider.companyName}</H2>
             <StatusBadge status={user.provider.status} />
           </View>
-          <Muted>{user.provider.type === 'UMRAH' ? 'Umrah provider' : 'Transport provider'}</Muted>
+          <Muted>Service provider · {providerTypeLabel(user.provider.type)}</Muted>
           <Button title="Open provider dashboard" variant="gold" onPress={() => router.push('/provider')} />
         </Card>
       ) : null}
 
+      {!user.provider ? <ProviderInvite /> : null}
+
       <Button title="Sign out" variant="ghost" style={{ marginTop: 16 }} onPress={() => void signOut()} />
     </Screen>
+  );
+}
+
+/** One door for every kind of service provider; the service is chosen on the next screen. */
+function ProviderInvite() {
+  return (
+    <Card style={{ marginTop: 16, backgroundColor: colors.brand50 }}>
+      <Text style={{ fontSize: 16, fontWeight: '700', color: colors.brand900 }}>Do you serve pilgrims?</Text>
+      <Muted>Umrah operators, transport, hotels, catering, guides and more can list with My Ummah for free. Choose the service you offer and apply.</Muted>
+      <Button title="Become a service provider" variant="gold" onPress={() => router.push('/provider/apply')} />
+    </Card>
   );
 }

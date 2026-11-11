@@ -5,10 +5,21 @@ import { FadeInUp } from '@/components/motion';
 import { Chips } from '@/components/ui';
 import { GuideContent } from '@/features/GuideContent';
 import { PackagesList } from '@/features/PackagesList';
+import { PlannerList } from '@/features/PlannerList';
 import { TransportList } from '@/features/TransportList';
 import { VisaGuide } from '@/features/VisaGuide';
+import { ZamzamGuide } from '@/features/ZamzamGuide';
 import { UMRAH_SECTIONS, parseSection } from '@/lib/umrah';
 import { colors, space } from '@/theme';
+
+const SECTION_VIEWS = {
+  packages: <PackagesList />,
+  transport: <TransportList />,
+  guide: <GuideContent />,
+  visa: <VisaGuide />,
+  zamzam: <ZamzamGuide />,
+  planner: <PlannerList />,
+} as const;
 
 /**
  * Everything about Umrah in one place. The open section lives in the route
@@ -24,7 +35,7 @@ export default function UmrahScreen() {
       </View>
       {/* Keyed so each section animates in when it is chosen. */}
       <FadeInUp key={section} style={{ flex: 1 }}>
-        {section === 'packages' ? <PackagesList /> : section === 'transport' ? <TransportList /> : section === 'guide' ? <GuideContent /> : <VisaGuide />}
+        {SECTION_VIEWS[section]}
       </FadeInUp>
     </View>
   );

@@ -105,7 +105,7 @@ export default async function AdminAds() {
         </Field>
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Colour">
-            <select name="theme" className="input" defaultValue="green">
+            <select name="theme" className="input" defaultValue="brand">
               {AD_THEMES.map((t) => (
                 <option key={t} value={t}>
                   {t.charAt(0).toUpperCase() + t.slice(1)}

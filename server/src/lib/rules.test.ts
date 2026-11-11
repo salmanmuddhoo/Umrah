@@ -81,6 +81,7 @@ describe("roleForProviderType", () => {
   it("maps provider types to account roles", () => {
     expect(roleForProviderType("UMRAH")).toBe("PROVIDER");
     expect(roleForProviderType("TRANSPORT")).toBe("TRANSPORT");
+    expect(roleForProviderType("CATERING")).toBe("PROVIDER");
     expect(roleForProviderType(null)).toBe("PILGRIM");
   });
 });

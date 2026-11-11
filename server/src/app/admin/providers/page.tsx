@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
+import { providerTypeLabel } from "@/lib/constants";
 import { date } from "@/lib/format";
 import { setProviderStatus } from "@/app/actions/admin";
 import { Empty, StatusBadge } from "@/components/ui";
@@ -27,7 +28,7 @@ export default async function AdminProviders() {
               <div className="min-w-0 flex-1">
                 <p className="font-semibold text-slate-900">
                   {p.companyName}{" "}
-                  <span className="badge bg-gold-100 text-gold-600">{p.type === "UMRAH" ? "Umrah" : "Transport"}</span>
+                  <span className="badge bg-gold-100 text-gold-600">{providerTypeLabel(p.type)}</span>
                 </p>
                 <p className="text-slate-600">
                   {p.user.name} · {p.user.email ?? p.user.phone}
@@ -35,7 +36,7 @@ export default async function AdminProviders() {
                 </p>
                 <p className="text-xs text-slate-500">
                   {[p.city, p.country].filter(Boolean).join(", ") || "Location not given"} · Licence: {p.licenseNo || "not given"} ·{" "}
-                  {p.type === "UMRAH" ? `${p._count.packages} packages` : `${p._count.services} services`} · joined {date(p.createdAt)}
+                  {p.type === "UMRAH" ? `${p._count.packages} packages` : p.type === "TRANSPORT" ? `${p._count.services} services` : "no listings yet"} · joined {date(p.createdAt)}
                 </p>
               </div>
               <StatusBadge status={p.status} />

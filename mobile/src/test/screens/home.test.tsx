@@ -12,7 +12,7 @@ jest.mock('expo-router', () => ({
 }));
 jest.mock('@/lib/auth', () => ({ useAuth: jest.fn() }));
 
-const packageAd: Ad = { id: 'ad1', advertiser: 'Noor Travel', headline: 'Stay steps from the Haram', body: '', cta: 'See package', theme: 'green', packageId: 'pkg9', serviceId: null };
+const packageAd: Ad = { id: 'ad1', advertiser: 'Noor Travel', headline: 'Stay steps from the Haram', body: '', cta: 'See package', theme: 'brand', packageId: 'pkg9', serviceId: null };
 const rideAd: Ad = { id: 'ad2', advertiser: 'Haramain Rides', headline: 'Makkah to Madinah', body: '', cta: 'Book a ride', theme: 'night', packageId: null, serviceId: 'svc4' };
 
 const api = { ads: jest.fn(), adClick: jest.fn(), packages: jest.fn() };
@@ -37,7 +37,7 @@ describe('HomeScreen', () => {
 
   it('offers a shortcut to every service', async () => {
     await setup();
-    expect(SHORTCUTS.map((s) => s.title)).toEqual(['Umrah packages', 'Transport', 'How to perform Umrah', 'Visa guide', 'Community', 'My bookings']);
+    expect(SHORTCUTS.map((s) => s.title)).toEqual(['Umrah packages', 'Transport', 'How to perform Umrah', 'Visa guide', 'Umrah planner', 'Zamzam water', 'Community', 'My bookings']);
     for (const { title } of SHORTCUTS) expect(screen.getByRole('button', { name: title })).toBeTruthy();
   });
 
@@ -46,10 +46,21 @@ describe('HomeScreen', () => {
     ['Transport', 'transport'],
     ['How to perform Umrah', 'guide'],
     ['Visa guide', 'visa'],
+    ['Umrah planner', 'planner'],
+    ['Zamzam water', 'zamzam'],
   ])('%s opens the Umrah tab on the %s section', async (title, section) => {
     await setup();
     await fireEvent.press(screen.getByRole('button', { name: title }));
     expect(router.navigate).toHaveBeenCalledWith({ pathname: '/umrah', params: { section } });
+  });
+
+  it("shows today's date in both the Hijri and Gregorian calendars", async () => {
+    const { bothCalendars } = jest.requireActual('@/lib/hijri');
+    const today = bothCalendars(new Date());
+    await setup();
+    expect(await screen.findByLabelText(`Today is ${today.hijriText}, ${today.gregorianText}`)).toBeTruthy();
+    expect(screen.getByText(`${today.hijriMonth} ${today.hijriYear}`)).toBeTruthy();
+    expect(screen.getByText(today.gregorianText)).toBeTruthy();
   });
 
   it('sends a signed-out visitor to sign in before showing bookings', async () => {

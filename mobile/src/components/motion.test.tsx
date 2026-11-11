@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, userEvent } from '@testing-library/react-native';
 import { AccessibilityInfo, Animated, Text } from 'react-native';
 
-import { FadeInUp, PressableScale } from './motion';
+import { FadeInUp, PressableScale, ProgressBar, SkeletonList, stagger } from './motion';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -75,5 +75,37 @@ describe('PressableScale', () => {
     );
     await fireEvent.press(screen.getByRole('button'));
     expect(onPress).not.toHaveBeenCalled();
+  });
+});
+
+describe('ProgressBar', () => {
+  it('reports its value to screen readers as a percentage', async () => {
+    await render(<ProgressBar value={0.25} label="Checklist progress" />);
+    expect(screen.getByRole('progressbar', { name: 'Checklist progress' }).props.accessibilityValue).toEqual({ min: 0, max: 100, now: 25 });
+  });
+
+  it('clamps out-of-range and invalid values', async () => {
+    const view = await render(<ProgressBar value={1.7} label="p" />);
+    expect(screen.getByRole('progressbar').props.accessibilityValue.now).toBe(100);
+    await view.rerender(<ProgressBar value={NaN} label="p" />);
+    expect(screen.getByRole('progressbar').props.accessibilityValue.now).toBe(0);
+  });
+
+  it('animates to a new value', async () => {
+    const timing = jest.spyOn(Animated, 'timing');
+    const view = await render(<ProgressBar value={0.2} label="p" />);
+    await view.rerender(<ProgressBar value={0.8} label="p" />);
+    expect(timing).toHaveBeenLastCalledWith(expect.anything(), expect.objectContaining({ toValue: 0.8, duration: 500 }));
+  });
+});
+
+describe('SkeletonList / stagger', () => {
+  it('announces loading while showing placeholder cards', async () => {
+    await render(<SkeletonList count={2} />);
+    expect(screen.getByLabelText('Loading')).toBeTruthy();
+  });
+
+  it('staggers the first few list items and then stops adding delay', () => {
+    expect([0, 1, 2, 6, 7, 40].map((i) => stagger(i))).toEqual([0, 60, 120, 360, 360, 360]);
   });
 });

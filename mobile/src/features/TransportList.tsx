@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { ServiceCard } from '@/components/ServiceCard';
+import { FadeInUp, stagger } from '@/components/motion';
 import { Chips, Empty, Input, Muted, QueryState, styles } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { VEHICLE_TYPES } from '@/lib/constants';
@@ -44,7 +45,11 @@ export function TransportList() {
         </View>
       }
       ListEmptyComponent={data ? <Empty>No transport matches your search.</Empty> : undefined}
-      renderItem={({ item }) => <ServiceCard service={item} onPress={() => router.push({ pathname: '/transport/[id]', params: { id: item.id } })} />}
+      renderItem={({ item, index }) => (
+        <FadeInUp delay={stagger(index)}>
+          <ServiceCard service={item} onPress={() => router.push({ pathname: '/transport/[id]', params: { id: item.id } })} />
+        </FadeInUp>
+      )}
     />
   );
 }

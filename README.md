@@ -11,19 +11,34 @@ server/   The API the app talks to, plus the platform owner's admin console (web
 
 | Tab / area | What is in it | Who |
 | --- | --- | --- |
-| Home | Shortcut cards to every service, a rotating banner of sponsored cards from suppliers, and the next departures | Everyone |
+| Home | Today's date in the Hijri and Gregorian calendars, a rotating banner of sponsored cards from suppliers, shortcut cards to every service, and the next departures | Everyone |
 | Umrah → Packages | Search, filter and book Umrah packages; seats are tracked so a package cannot be oversold | Everyone (sign in to book) |
 | Umrah → Transport | Book airport transfers, intercity rides and ziyarah tours | Everyone (sign in to book) |
 | Umrah → How to perform | Ihram, tawaf, sa'i and halq step by step, with duas in Arabic, transliteration and meaning. Bundled in the app, so it works offline | Everyone |
-| Umrah → Visa | Which visa routes exist, how to apply step by step, and links to the official Saudi sources. Bundled in the app | Everyone |
+| Umrah → Visa | Each type of visa with its cost, how to apply step by step, and links to the official Saudi sources | Everyone |
+| Umrah → Zamzam | Where to buy Zamzam water at Jeddah and Madinah airports, what it costs, and the rules for taking it home | Everyone |
+| Umrah → Planner | A personal trip plan: dates, travellers, notes, a countdown, and a checklist for every stage of the trip that starts pre-filled and can be ticked, added to and trimmed | Signed-in users |
 | Community | Topics, posts, up/down votes and threaded replies | Everyone (sign in to post) |
 | Account → Sign in / sign up | Email address or phone number → 6-digit code (by email, or WhatsApp for phone numbers) → choose a 4-digit PIN. The PIN is asked for every time the app is opened | Everyone |
 | Account → My bookings | Track and cancel bookings | Signed-in users |
-| Account → Provider dashboard | Earnings, listings (create / edit / hide), incoming bookings (confirm / decline / complete), company profile | Umrah and transport providers |
+| Account → Become a service provider | One button for every kind of provider: choose the service you offer (Umrah packages, transport, hotels, catering, guides, other), then give your company details | Everyone |
+| Account → Provider dashboard | Earnings, listings (create / edit / hide), incoming bookings (confirm / decline / complete), company profile | Approved providers |
 
-Cards and sections animate in, buttons respond to touch, and the ad banner rotates on its own; all of it switches off when the phone is set to reduce motion.
+The app uses light grey surfaces with an indigo accent (set in `mobile/src/theme.ts`; the admin console matches). Cards and sections animate in, lists load behind pulsing placeholders, banners have slowly drifting shapes, progress bars fill, buttons respond to touch, and the ad banner rotates on its own. All motion switches off when the phone is set to reduce motion.
 
-The platform owner's back office is a small web console served by `server/` at `/admin`: revenue, commission owed per provider, approving or suspending providers, setting commission rates, and managing the Home tab's advertising.
+### Adding a new kind of service provider
+
+Add one line to `PROVIDER_TYPES` in `server/src/lib/constants.ts` and the matching line in `mobile/src/lib/constants.ts`. It then appears on the "Become a service provider" screen and in the admin console. Only Umrah-package and transport providers have listing and booking tools so far; other kinds can apply, be approved and keep a company profile, and see a "coming soon" note where their listings will be.
+
+### Prices shown in the guides
+
+The Zamzam price and the cost of each visa type are short pieces of text you edit in the admin console under **Guide prices**, together with the "last checked" date readers see. The app fetches them when it opens and falls back to the values bundled with it when offline. The bundled defaults were checked against public sources in November 2026.
+
+### Hijri dates
+
+The app uses the phone's own Umm al-Qura calendar (the one Saudi Arabia publishes). On a phone without it, an arithmetic Islamic calendar is used instead, which can be a day out. The real start of a month depends on the moon being sighted, so treat the date as a guide.
+
+The platform owner's back office is a small web console served by `server/` at `/admin`: revenue, commission owed per provider, approving or suspending providers, setting commission rates, editing the prices quoted in the guides, and managing the Home tab's advertising.
 
 ### How the money works
 
@@ -87,8 +102,8 @@ How sign-in is protected:
 ## Tests
 
 ```bash
-cd server && npm test    # 161 tests: business rules, validation, API routing, sign-in (codes, PINs, lockout), advertising, and every service against a throwaway SQLite database
-cd mobile && npm test    # 165 tests: API client, validation, formatting, comment threading, sign-in flow, PIN pad, app lock, Home, ad banner, animations, guide and visa content
+cd server && npm test    # 186 tests: business rules, validation, API routing, sign-in (codes, PINs, lockout), advertising, provider applications, the planner, guide prices, and every service against a throwaway SQLite database
+cd mobile && npm test    # 232 tests: API client, validation, formatting, the Hijri calendar, sign-in flow, PIN pad, app lock, Home, ad banner, animations, guides and prices, planner, provider application
 ```
 
 Both suites, plus lint and type checks, run on every pull request and on `production` through GitHub Actions (`.github/workflows/ci.yml`).
@@ -137,5 +152,5 @@ iOS builds need a Mac and an Apple Developer account, so they are not part of th
 - Add online payments and push/email notifications for booking events.
 - Add per-IP rate limiting in front of the API (codes and PINs are already limited per account) and limits on posting, and reporting tools for the community (both app stores require a way to report and block user content).
 - Replace the typed date and time fields with native pickers.
-- Have the Umrah guide reviewed by a qualified scholar, and re-check the visa guide (`mobile/src/lib/visa.ts`) against the official Saudi sources — entry rules change often, and the guide shows its last-reviewed date to readers.
+- Have the Umrah guide reviewed by a qualified scholar, and re-check the visa guide (`mobile/src/lib/visa.ts`), the Zamzam guide (`mobile/src/lib/zamzam.ts`) and the guide prices against the official Saudi sources — entry rules and fees change often, and the guides show their last-checked date to readers.
 - There is no admin sign-up. `npm run db:seed` creates the demo admin; for a real deployment create a user in the database with `role` `ADMIN`, an `email`, and a bcrypt `passwordHash`.

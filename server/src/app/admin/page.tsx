@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { EARNING_STATUSES } from "@/lib/constants";
+import { EARNING_STATUSES, providerTypeLabel } from "@/lib/constants";
 import { money } from "@/lib/format";
 import { Empty, Stat } from "@/components/ui";
 
@@ -74,7 +74,7 @@ export default async function AdminHome() {
                 {table.map((r) => (
                   <tr key={r.id}>
                     <td className="px-4 py-3 font-medium text-slate-900">{r.companyName}</td>
-                    <td className="px-4 py-3">{r.type === "UMRAH" ? "Umrah" : "Transport"}</td>
+                    <td className="px-4 py-3">{providerTypeLabel(r.type)}</td>
                     <td className="px-4 py-3 text-right">{r.count}</td>
                     <td className="px-4 py-3 text-right">{money(r.gross)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-brand-800">{money(r.commission)}</td>

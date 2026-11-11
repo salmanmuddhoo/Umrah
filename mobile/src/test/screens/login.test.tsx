@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 import LoginScreen from '@/app/login';
 import { ApiError } from '@/lib/api';
@@ -113,13 +113,43 @@ describe('LoginScreen', () => {
     expect(api.register).not.toHaveBeenCalled();
   });
 
-  it('asks providers for their company before the PIN', async () => {
+  describe('arriving from "Become a service provider"', () => {
+    beforeEach(() => (useLocalSearchParams as jest.Mock).mockReturnValue({ as: 'CATERING' }));
+    afterEach(() => (useLocalSearchParams as jest.Mock).mockReturnValue({}));
+
+    it('asks a new provider for their company, then registers them for the chosen service', async () => {
+      const providerSession = { token: 't', user: { ...user, provider: { id: 'p1', type: 'CATERING' } } };
+      api.register.mockResolvedValue(providerSession);
+      await verify('new@example.com', false);
+      expect(await screen.findByText('Apply: Food & catering')).toBeTruthy();
+      await fireEvent.changeText(screen.getByLabelText('Your name'), 'Huda');
+      await press('Continue');
+      expect(await screen.findByText('Please enter your company name.')).toBeTruthy();
+
+      await fireEvent.changeText(screen.getByLabelText('Company name'), 'Madinah Kitchen');
+      await press('Continue');
+      await screen.findByText('Choose a 4-digit PIN');
+      await enterPin('4821');
+      await screen.findByText('Enter your PIN again');
+      await enterPin('4821');
+
+      await waitFor(() => expect(router.replace).toHaveBeenCalledWith('/provider'));
+      expect(api.register).toHaveBeenCalledWith(expect.objectContaining({ as: 'CATERING', companyName: 'Madinah Kitchen', name: 'Huda' }));
+    });
+
+    it('sends an existing member on to finish their application after signing in', async () => {
+      api.login.mockResolvedValue(session);
+      await verify('aisha@example.com', true);
+      await screen.findByText('Enter your PIN');
+      await enterPin('4821');
+      await waitFor(() => expect(router.replace).toHaveBeenCalledWith({ pathname: '/provider/apply', params: { type: 'CATERING' } }));
+    });
+  });
+
+  it('does not ask an ordinary pilgrim about a company', async () => {
     await verify('new@example.com', false);
     await screen.findByLabelText('Your name');
-    await press('Umrah provider');
-    await fireEvent.changeText(screen.getByLabelText('Your name'), 'Omar');
-    await press('Continue');
-    expect(await screen.findByText('Please enter your company name.')).toBeTruthy();
+    expect(screen.queryByLabelText('Company name')).toBeNull();
   });
 
   it('lets someone who forgot their PIN choose a new one after the code', async () => {
