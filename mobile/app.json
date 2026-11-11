@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "My Ummah",
+    "slug": "my-ummah",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myummah",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "bundleIdentifier": "com.myummah.app",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.myummah.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0f5c47",
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0f5c47",
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 120
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
