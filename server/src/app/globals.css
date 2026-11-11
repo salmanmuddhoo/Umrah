@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #eef1fd;
-  --color-brand-100: #e0e5fb;
-  --color-brand-200: #c3cbf7;
-  --color-brand-500: #6268e0;
-  --color-brand-600: #4f56d3;
-  --color-brand-700: #3f44b8;
-  --color-brand-800: #33378f;
-  --color-brand-900: #1f2257;
-  --color-gold-100: #fdf0d5;
-  --color-gold-400: #f5a524;
-  --color-gold-600: #a15c00;
-  --color-sand: #f2f3f7;
+  --color-brand-50: #ecfdf5;
+  --color-brand-100: #d1fae5;
+  --color-brand-200: #a7f3d0;
+  --color-brand-500: #10b981;
+  --color-brand-600: #059669;
+  --color-brand-700: #047857;
+  --color-brand-800: #065f46;
+  --color-brand-900: #064e3b;
+  --color-gold-100: #fbf1d3;
+  --color-gold-400: #e6bf4a;
+  --color-gold-600: #7a5c0c;
+  --color-sand: #f0f9f4;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-arabic: "Amiri", "Scheherazade New", "Noto Naskh Arabic", "Traditional Arabic", serif;
 }
@@ -57,11 +57,11 @@ body {
   }
   .btn-gold {
     @apply bg-gold-400 text-slate-900 hover:brightness-105;
-    --ledge: #b9770a;
+    --ledge: #b08d1e;
   }
   .btn-ghost {
     @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
-    --ledge: #c3c8d4;
+    --ledge: #b9cfc3;
   }
   .btn-danger {
     @apply border border-red-200 bg-white text-red-700 hover:bg-red-50;

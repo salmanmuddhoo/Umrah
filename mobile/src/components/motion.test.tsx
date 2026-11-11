@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen, userEvent } from '@testing-library/react-native';
 import { AccessibilityInfo, Animated, Text } from 'react-native';
 
-import { FadeInUp, PressableScale, ProgressBar, SkeletonList, stagger } from './motion';
+import { FadeInUp, FloatingShapes, PressableScale, ProgressBar, SkeletonList, stagger, StarPattern } from './motion';
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -107,5 +107,26 @@ describe('SkeletonList / stagger', () => {
 
   it('staggers the first few list items and then stops adding delay', () => {
     expect([0, 1, 2, 6, 7, 40].map((i) => stagger(i))).toEqual([0, 60, 120, 360, 360, 360]);
+  });
+});
+
+describe('StarPattern', () => {
+  it('tiles eight-pointed stars, each drawn as two squares with one turned 45 degrees', async () => {
+    const view = await render(<StarPattern color="#f3d57a40" count={6} />);
+    const tree = JSON.stringify(view.toJSON());
+    expect(tree.match(/"rotate":"45deg"/g)).toHaveLength(6);
+    expect(tree.match(/"borderColor":"#f3d57a40"/g)).toHaveLength(12);
+  });
+
+  it('is hidden from screen readers and never intercepts touches', async () => {
+    const view = await render(<StarPattern count={1} />);
+    const root = view.toJSON() as { props: Record<string, unknown> };
+    expect(root.props.pointerEvents).toBe('none');
+    expect(root.props.accessibilityElementsHidden).toBe(true);
+  });
+
+  it('is part of every banner backdrop, in the colour the banner asks for', async () => {
+    const view = await render(<FloatingShapes pattern="#0478571f" />);
+    expect(JSON.stringify(view.toJSON())).toContain('"borderColor":"#0478571f"');
   });
 });
