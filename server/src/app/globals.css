@@ -29,27 +29,57 @@ body {
   .card {
     @apply rounded-2xl border border-black/5 bg-white shadow-sm;
   }
+  /* Raised "3D" buttons: the face sits on a darker ledge (a hard shadow) and sinks onto it when pressed. */
   .btn,
   .btn-primary,
   .btn-gold,
   .btn-ghost,
   .btn-danger {
-    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60;
+    --ledge: transparent;
+    margin-bottom: 4px;
+    box-shadow: 0 4px 0 var(--ledge);
+    transition:
+      transform 70ms ease-out,
+      box-shadow 70ms ease-out,
+      background-color 150ms;
+  }
+  .btn-primary:active:not(:disabled),
+  .btn-gold:active:not(:disabled),
+  .btn-ghost:active:not(:disabled),
+  .btn-danger:active:not(:disabled) {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--ledge);
   }
   .btn-primary {
-    @apply bg-brand-700 text-white hover:bg-brand-800;
+    @apply bg-brand-700 text-white hover:bg-brand-600;
+    --ledge: var(--color-brand-900);
   }
   .btn-gold {
-    @apply bg-gold-400 text-brand-900 hover:bg-gold-600 hover:text-white;
+    @apply bg-gold-400 text-slate-900 hover:brightness-105;
+    --ledge: #b9770a;
   }
   .btn-ghost {
-    @apply border border-black/10 bg-white text-slate-700 hover:bg-slate-50;
+    @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+    --ledge: #c3c8d4;
   }
   .btn-danger {
     @apply border border-red-200 bg-white text-red-700 hover:bg-red-50;
+    --ledge: #e39a9a;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn,
+    .btn-primary,
+    .btn-gold,
+    .btn-ghost,
+    .btn-danger {
+      transition: none;
+    }
   }
   .btn-sm {
     @apply px-3 py-1.5 text-xs;
+    margin-bottom: 3px;
+    box-shadow: 0 3px 0 var(--ledge);
   }
   .input {
     @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-200 focus:outline-none;
