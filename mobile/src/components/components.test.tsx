@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, userEvent } from '@testing-library/react-native';
+import { Animated } from 'react-native';
 
 import { pkg, service } from '@/test/fixtures';
 
@@ -65,6 +66,14 @@ describe('Button', () => {
     await render(<Button title="Request booking" onPress={onPress} />);
     await fireEvent.press(screen.getByRole('button', { name: 'Request booking' }));
     expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('sinks onto its ledge while pressed and rises again on release', async () => {
+    const timing = jest.spyOn(Animated, 'timing');
+    await render(<Button title="Request booking" onPress={() => {}} />);
+    await userEvent.setup().press(screen.getByRole('button'));
+    expect(timing.mock.calls.map(([, config]) => config.toValue)).toEqual([1, 0]);
+    timing.mockRestore();
   });
 
   it('cannot be pressed twice while a request is in flight', async () => {

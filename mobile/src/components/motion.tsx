@@ -4,7 +4,7 @@ import { AccessibilityInfo, Animated, Easing, Platform, Pressable, StyleSheet, V
 import { colors, radius, space } from '@/theme';
 
 // The native animation driver does not exist on web (used for development previews).
-const NATIVE = Platform.OS !== 'web';
+export const NATIVE = Platform.OS !== 'web';
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /** True when the person has asked their phone to reduce motion; animations then become instant. */

@@ -1,7 +1,8 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   ActivityIndicator,
   Alert,
+  Animated,
   Platform,
   Pressable,
   RefreshControl,
@@ -19,7 +20,7 @@ import {
 import { statusLabel } from '@/lib/format';
 import { colors, radius, space } from '@/theme';
 
-import { PressableScale, SkeletonList } from './motion';
+import { NATIVE, SkeletonList, useReduceMotion } from './motion';
 
 /** A scrolling page with standard padding and optional pull-to-refresh. */
 export function Screen({ children, refreshing, onRefresh }: { children: ReactNode; refreshing?: boolean; onRefresh?: () => void }) {
@@ -62,22 +63,38 @@ type ButtonProps = {
   style?: StyleProp<ViewStyle>;
 };
 
+/**
+ * A raised, "3D" button: the coloured face sits on a darker ledge and sinks
+ * onto it while pressed, like a physical key.
+ */
 export function Button({ title, onPress, variant = 'primary', loading, disabled, small, style }: ButtonProps) {
   const off = disabled || loading;
   const filled = variant === 'primary' || variant === 'gold';
+  const depth = small ? BUTTON_DEPTH_SMALL : BUTTON_DEPTH;
+  const [press] = useState(() => new Animated.Value(0));
+  const reduce = useReduceMotion();
+  const to = (toValue: number) => Animated.timing(press, { toValue, duration: reduce ? 0 : 70, useNativeDriver: NATIVE }).start();
+  // Stop a hair short of the ledge so an edge of it stays visible when fully pressed.
+  const translateY = press.interpolate({ inputRange: [0, 1], outputRange: [0, depth - 1] });
+
   return (
-    <PressableScale
+    <Pressable
       accessibilityRole="button"
       accessibilityState={{ disabled: !!off, busy: !!loading }}
       disabled={off}
       onPress={onPress}
-      style={[styles.button, small && styles.buttonSmall, buttonStyles[variant], off && styles.dim, style]}>
-      {loading ? (
-        <ActivityIndicator color={filled ? colors.white : colors.brand700} />
-      ) : (
-        <Text style={[styles.buttonText, small && styles.buttonTextSmall, buttonTextStyles[variant]]}>{title}</Text>
-      )}
-    </PressableScale>
+      onPressIn={() => to(1)}
+      onPressOut={() => to(0)}
+      style={[{ paddingBottom: depth }, off && styles.dim, style]}>
+      <View style={[styles.buttonLedge, { top: depth, backgroundColor: buttonLedges[variant] }]} />
+      <Animated.View style={[styles.button, small && styles.buttonSmall, buttonStyles[variant], { transform: [{ translateY }] }]}>
+        {loading ? (
+          <ActivityIndicator color={filled ? colors.white : colors.brand700} />
+        ) : (
+          <Text style={[styles.buttonText, small && styles.buttonTextSmall, buttonTextStyles[variant]]}>{title}</Text>
+        )}
+      </Animated.View>
+    </Pressable>
   );
 }
 
@@ -237,12 +254,19 @@ const tones = {
   slate: { bg: colors.slateBg, fg: '#334155' },
 } as const;
 
+/** How far a button's face stands proud of its ledge, in points. */
+export const BUTTON_DEPTH = 4;
+export const BUTTON_DEPTH_SMALL = 3;
+
 const buttonStyles = StyleSheet.create({
-  primary: { backgroundColor: colors.brand700 },
-  gold: { backgroundColor: colors.gold400 },
-  ghost: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border },
-  danger: { backgroundColor: colors.white, borderWidth: 1, borderColor: '#fecaca' },
+  // The lighter top edge reads as light catching the face.
+  primary: { backgroundColor: colors.brand700, borderTopWidth: 1, borderTopColor: '#6b70d9' },
+  gold: { backgroundColor: colors.gold400, borderTopWidth: 1, borderTopColor: '#ffc65c' },
+  ghost: { backgroundColor: colors.white, borderWidth: 1, borderColor: '#d5d9e3' },
+  danger: { backgroundColor: colors.white, borderWidth: 1, borderColor: '#f5b5b5' },
 });
+/** The darker ledge each face sits on. */
+const buttonLedges = { primary: colors.brand900, gold: '#b9770a', ghost: '#c3c8d4', danger: '#e39a9a' } as const;
 const buttonTextStyles = StyleSheet.create({
   primary: { color: colors.white },
   gold: { color: colors.text },
@@ -259,6 +283,7 @@ export const styles = StyleSheet.create({
   body: { fontSize: 15, lineHeight: 22, color: colors.text },
   muted: { fontSize: 13, lineHeight: 18, color: colors.muted },
   button: { minHeight: 46, borderRadius: radius.md, paddingHorizontal: space.lg, alignItems: 'center', justifyContent: 'center' },
+  buttonLedge: { position: 'absolute', left: 0, right: 0, bottom: 0, borderRadius: radius.md },
   buttonSmall: { minHeight: 36, paddingHorizontal: space.md },
   buttonText: { fontSize: 15, fontWeight: '600' },
   buttonTextSmall: { fontSize: 13 },
