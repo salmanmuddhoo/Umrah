@@ -1,7 +1,8 @@
 /** Shapes returned by the My Ummah API (server/src/api/routes.ts). Dates arrive as ISO strings. */
 
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
-export type ProviderType = 'UMRAH' | 'TRANSPORT';
+/** 'UMRAH', 'TRANSPORT', or any other kind of service listed in PROVIDER_TYPES. */
+export type ProviderType = string;
 
 export type Provider = {
   id: string;
@@ -132,6 +133,9 @@ export type PostDetail = Post & { comments: Comment[] };
 
 export type Meta = {
   commission: { package: number; transport: number };
+  prices: Record<string, string>;
+  providerTypes: { value: string; label: string; description: string; listings: string | null }[];
+  planStages: { value: string; label: string }[];
   topics: { slug: string; label: string }[];
   vehicleTypes: { value: string; label: string }[];
 };
@@ -147,3 +151,8 @@ export type Ad = {
   packageId: string | null;
   serviceId: string | null;
 };
+
+export type PlanItem = { id: string; planId: string; stage: string; text: string; done: boolean; position: number };
+type PlanBase = { id: string; title: string; departDate: string | null; returnDate: string | null; travellers: number; notes: string };
+export type PlanSummary = PlanBase & { itemCount: number; doneCount: number };
+export type Plan = PlanBase & { items: PlanItem[] };

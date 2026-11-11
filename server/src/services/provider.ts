@@ -1,7 +1,9 @@
 import "server-only";
 import { db } from "@/lib/db";
 import type { SessionUser } from "@/lib/auth";
-import { EARNING_STATUSES, VEHICLE_TYPES } from "@/lib/constants";
+import { EARNING_STATUSES, parseProviderType, VEHICLE_TYPES } from "@/lib/constants";
+import { roleForProviderType } from "@/lib/rules";
+import { ApiError } from "@/lib/errors";
 import { badRequest, forbidden, notFound } from "@/lib/errors";
 import { getCommissionRates } from "@/lib/settings";
 import { between, bool, cents, int, parseDay, str, type Input } from "@/lib/validate";
@@ -14,6 +16,31 @@ function providerOf(user: SessionUser, type?: "UMRAH" | "TRANSPORT") {
     throw forbidden(type === "UMRAH" ? "Only Umrah providers can manage packages." : "Only transport providers can manage services.");
   }
   return user.provider;
+}
+
+/** Lets someone who already has an account apply to offer a service. They start as pending, like any new provider. */
+export async function applyAsProvider(user: SessionUser, input: Input) {
+  if (user.provider) throw new ApiError(409, "You have already applied as a service provider.");
+  const type = parseProviderType(str(input, "type", 30));
+  const companyName = str(input, "companyName", 120);
+  if (!type) throw badRequest("Choose the service you want to provide.");
+  if (companyName.length < 2) throw badRequest("Please enter your company name.");
+
+  const provider = await db.provider.create({
+    data: {
+      userId: user.id,
+      type,
+      companyName,
+      description: str(input, "description", 2000),
+      country: str(input, "country", 80),
+      city: str(input, "city", 80),
+      phone: str(input, "phone", 40) || user.phone || "",
+      licenseNo: str(input, "licenseNo", 80),
+    },
+  });
+  // Admins keep their role; everyone else becomes a provider account.
+  if (user.role !== "ADMIN") await db.user.update({ where: { id: user.id }, data: { role: roleForProviderType(type) } });
+  return provider;
 }
 
 export async function dashboard(user: SessionUser) {
@@ -30,6 +57,11 @@ export async function dashboard(user: SessionUser) {
       db.packageBooking.count({ where: { ...scope, status: "PENDING" } }),
       db.packageBooking.aggregate({ where: { ...scope, ...earning }, ...sum }),
     ]);
+  } else if (provider.type !== "TRANSPORT") {
+    // Other kinds of provider have no listing tools yet, so there is nothing to count.
+    listings = 0;
+    pending = 0;
+    sums = { _sum: { totalCents: 0, commissionCents: 0 }, _count: 0 };
   } else {
     const scope = { service: { providerId: provider.id } };
     [listings, pending, sums] = await Promise.all([
@@ -212,6 +244,7 @@ export async function providerBookings(user: SessionUser) {
       customerContact: u.email ?? u.phone ?? "",
     }));
   }
+  if (provider.type !== "TRANSPORT") return [];
   const rows = await db.transportBooking.findMany({
     where: { service: { providerId: provider.id } },
     orderBy: { createdAt: "desc" },

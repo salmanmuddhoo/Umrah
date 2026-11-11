@@ -2,6 +2,7 @@ import { Linking, Text, View } from 'react-native';
 
 import { FadeInUp } from '@/components/motion';
 import { Body, Button, Card, H2, Muted, Notice, Screen, styles } from '@/components/ui';
+import { usePrices, type Prices } from '@/lib/prices';
 import { VISA_GOOD_TO_KNOW, VISA_OFFICIAL_LINKS, VISA_REVIEWED, VISA_ROUTES, VISA_STEPS } from '@/lib/visa';
 import { colors, space } from '@/theme';
 
@@ -20,6 +21,7 @@ function Bullets({ items }: { items: string[] }) {
 
 /** How to get a visa for Umrah. Bundled in the app, like the rites guide, so it reads offline. */
 export function VisaGuide() {
+  const prices = usePrices();
   return (
     <Screen>
       <Body>You need a valid visa to enter Saudi Arabia for Umrah. There are several ways to get one; which is right depends on your nationality, where you live and how you travel.</Body>
@@ -28,12 +30,19 @@ export function VisaGuide() {
         or your provider before you book.
       </Notice>
 
-      <H2>Ways to get a visa</H2>
+      <H2>Ways to get a visa, and what they cost</H2>
+      <Muted>Costs were last checked in {prices.reviewed} and are in Saudi riyals (SAR). The official site shows the exact amount before you pay.</Muted>
       {VISA_ROUTES.map((route, i) => (
         <FadeInUp key={route.id} delay={i * 70}>
           <Card>
             <Text style={{ fontSize: 16, fontWeight: '700', color: colors.brand900 }}>{route.title}</Text>
             <Muted>{route.who}</Muted>
+            <View style={cost}>
+              <Text style={{ fontSize: 11, fontWeight: '700', color: colors.gold600, letterSpacing: 0.6 }}>COST</Text>
+              <Text accessibilityLabel={`Cost of the ${route.title}: ${prices[`visa.${route.id}` as keyof Prices]}`} style={{ fontSize: 15, lineHeight: 21, fontWeight: '600', color: colors.text }}>
+                {prices[`visa.${route.id}` as keyof Prices]}
+              </Text>
+            </View>
             <Bullets items={route.points} />
           </Card>
         </FadeInUp>
@@ -66,4 +75,5 @@ export function VisaGuide() {
   );
 }
 
+const cost = { backgroundColor: colors.gold100, borderRadius: 10, paddingHorizontal: space.md, paddingVertical: space.sm, gap: 2 } as const;
 const number = { width: 32, height: 32, borderRadius: 16, backgroundColor: colors.brand700, alignItems: 'center', justifyContent: 'center' } as const;

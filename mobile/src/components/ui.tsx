@@ -19,6 +19,8 @@ import {
 import { statusLabel } from '@/lib/format';
 import { colors, radius, space } from '@/theme';
 
+import { PressableScale, SkeletonList } from './motion';
+
 /** A scrolling page with standard padding and optional pull-to-refresh. */
 export function Screen({ children, refreshing, onRefresh }: { children: ReactNode; refreshing?: boolean; onRefresh?: () => void }) {
   return (
@@ -64,18 +66,18 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled,
   const off = disabled || loading;
   const filled = variant === 'primary' || variant === 'gold';
   return (
-    <Pressable
+    <PressableScale
       accessibilityRole="button"
       accessibilityState={{ disabled: !!off, busy: !!loading }}
       disabled={off}
       onPress={onPress}
-      style={({ pressed }) => [styles.button, small && styles.buttonSmall, buttonStyles[variant], (off || pressed) && styles.dim, style]}>
+      style={[styles.button, small && styles.buttonSmall, buttonStyles[variant], off && styles.dim, style]}>
       {loading ? (
         <ActivityIndicator color={filled ? colors.white : colors.brand700} />
       ) : (
         <Text style={[styles.buttonText, small && styles.buttonTextSmall, buttonTextStyles[variant]]}>{title}</Text>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }
 
@@ -198,8 +200,8 @@ export function QueryState({ loading, error, onRetry }: { loading: boolean; erro
   }
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={colors.brand700} accessibilityLabel="Loading" />
+      <View style={styles.loading}>
+        <SkeletonList />
       </View>
     );
   }
@@ -243,7 +245,7 @@ const buttonStyles = StyleSheet.create({
 });
 const buttonTextStyles = StyleSheet.create({
   primary: { color: colors.white },
-  gold: { color: colors.brand900 },
+  gold: { color: colors.text },
   ghost: { color: '#334155' },
   danger: { color: colors.danger },
 });
@@ -281,6 +283,7 @@ export const styles = StyleSheet.create({
   empty: { paddingVertical: space.xl * 1.5 },
   stat: { flexGrow: 1, flexBasis: '45%' },
   statValue: { fontSize: 22, fontWeight: '700', color: colors.brand900 },
+  loading: { flex: 1, padding: space.lg, backgroundColor: colors.sand },
   center: { flex: 1, padding: space.xl, gap: space.md, justifyContent: 'center', backgroundColor: colors.sand },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },

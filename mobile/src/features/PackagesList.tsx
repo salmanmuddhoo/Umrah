@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { FlatList, RefreshControl, View } from 'react-native';
 
 import { PackageCard } from '@/components/PackageCard';
+import { FadeInUp, stagger } from '@/components/motion';
 import { Chips, Empty, Input, QueryState, styles } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
 import { useQuery } from '@/lib/useQuery';
@@ -56,7 +57,11 @@ export function PackagesList() {
         </View>
       }
       ListEmptyComponent={data ? <Empty>No packages match your search. Try widening your filters.</Empty> : undefined}
-      renderItem={({ item }) => <PackageCard pkg={item} onPress={() => router.push({ pathname: '/packages/[id]', params: { id: item.id } })} />}
+      renderItem={({ item, index }) => (
+        <FadeInUp delay={stagger(index)}>
+          <PackageCard pkg={item} onPress={() => router.push({ pathname: '/packages/[id]', params: { id: item.id } })} />
+        </FadeInUp>
+      )}
     />
   );
 }

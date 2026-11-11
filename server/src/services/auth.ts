@@ -6,6 +6,7 @@ import { hashCode, readVerification, signVerification } from "@/lib/auth";
 import { ApiError, badRequest } from "@/lib/errors";
 import { isPin, maskIdentifier, parseIdentifier, type Identifier } from "@/lib/identifier";
 import { channelFor, sendVerificationCode } from "@/lib/messaging";
+import { parseProviderType } from "@/lib/constants";
 import { roleForProviderType } from "@/lib/rules";
 import { str, type Input } from "@/lib/validate";
 
@@ -111,7 +112,8 @@ export async function registerUser(input: Input) {
   const companyName = str(input, "companyName", 120);
 
   if (name.length < 2) throw badRequest("Please enter your name.");
-  const providerType = as === "umrah" ? "UMRAH" : as === "transport" ? "TRANSPORT" : null;
+  // `as` is "pilgrim" (or absent) for travellers, or the kind of service a provider wants to offer.
+  const providerType = parseProviderType(as);
   if (providerType && companyName.length < 2) throw badRequest("Please enter your company name.");
 
   if (await db.user.findUnique({ where: whereUser(id), select: { id: true } })) {

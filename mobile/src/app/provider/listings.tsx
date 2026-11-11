@@ -17,6 +17,8 @@ export default function ListingsScreen() {
   const [notice, setNotice] = useState<{ tone: 'error' | 'ok'; text: string } | null>(null);
 
   if (ready && !user?.provider) return <Redirect href="/account" />;
+  // Only Umrah and transport providers have listing tools so far.
+  if (user?.provider && user.provider.type !== 'UMRAH' && user.provider.type !== 'TRANSPORT') return <Redirect href="/provider" />;
   if (!data) return <QueryState loading={loading} error={error} onRetry={reload} />;
 
   const form = isUmrah ? '/provider/package-form' : '/provider/service-form';

@@ -51,6 +51,9 @@ function Screens() {
       <Stack.Screen name="community/new" options={{ title: 'New post', presentation: 'modal' }} />
       <Stack.Screen name="login" options={{ title: 'Sign in or sign up', presentation: 'modal' }} />
       <Stack.Screen name="bookings" options={{ title: 'My bookings' }} />
+      <Stack.Screen name="planner/new" options={{ title: 'Umrah plan', presentation: 'modal' }} />
+      <Stack.Screen name="planner/[id]" options={{ title: 'Umrah planner' }} />
+      <Stack.Screen name="provider/apply" options={{ title: 'Become a provider' }} />
       <Stack.Screen name="provider/index" options={{ title: 'Provider dashboard' }} />
       <Stack.Screen name="provider/listings" options={{ title: 'My listings' }} />
       <Stack.Screen name="provider/package-form" options={{ title: 'Package' }} />

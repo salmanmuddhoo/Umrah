@@ -4,12 +4,12 @@ import { ScrollView, StyleSheet, Text, View, type NativeScrollEvent, type Native
 import type { Ad } from '@/lib/types';
 import { colors, radius, space } from '@/theme';
 
-import { PressableScale, useReduceMotion } from './motion';
+import { FloatingShapes, PressableScale, useReduceMotion } from './motion';
 
 const THEMES: Record<string, { bg: string; fg: string; soft: string; button: string; buttonText: string; shape: string }> = {
-  green: { bg: colors.brand700, fg: colors.white, soft: colors.brand100, button: colors.gold400, buttonText: colors.brand900, shape: '#ffffff14' },
-  gold: { bg: colors.gold100, fg: colors.brand900, soft: colors.gold600, button: colors.brand700, buttonText: colors.white, shape: '#a67c1e1f' },
-  night: { bg: '#12202b', fg: colors.white, soft: '#b7c6d1', button: colors.white, buttonText: '#12202b', shape: '#ffffff12' },
+  brand: { bg: colors.brand700, fg: colors.white, soft: colors.brand100, button: colors.gold400, buttonText: colors.brand900, shape: '#ffffff14' },
+  gold: { bg: colors.gold100, fg: colors.text, soft: colors.gold600, button: colors.brand700, buttonText: colors.white, shape: '#f5a52433' },
+  night: { bg: '#171a2e', fg: colors.white, soft: '#b9bfdc', button: colors.white, buttonText: '#171a2e', shape: '#ffffff12' },
 };
 
 /**
@@ -45,7 +45,7 @@ export function AdCarousel({ ads, onPress, intervalMs = 5000 }: { ads: Ad[]; onP
     <View onLayout={(e) => setWidth(e.nativeEvent.layout.width)} style={{ gap: space.sm }}>
       <ScrollView ref={scroller} horizontal pagingEnabled showsHorizontalScrollIndicator={false} onMomentumScrollEnd={onSwiped} style={s.scroller}>
         {ads.map((ad) => {
-          const t = THEMES[ad.theme] ?? THEMES.green;
+          const t = THEMES[ad.theme] ?? THEMES.brand;
           const linked = !!(ad.packageId || ad.serviceId);
           return (
             <PressableScale
@@ -55,8 +55,7 @@ export function AdCarousel({ ads, onPress, intervalMs = 5000 }: { ads: Ad[]; onP
               disabled={!linked}
               onPress={() => onPress(ad)}
               style={[s.card, { width: width || undefined, backgroundColor: t.bg }]}>
-              <View style={[s.shape, s.shapeBig, { backgroundColor: t.shape }]} />
-              <View style={[s.shape, s.shapeSmall, { backgroundColor: t.shape }]} />
+              <FloatingShapes color={t.shape} />
               <Text style={[s.sponsor, { color: t.soft }]}>SPONSORED · {ad.advertiser.toUpperCase()}</Text>
               <Text style={[s.headline, { color: t.fg }]} numberOfLines={2}>
                 {ad.headline}
@@ -90,9 +89,6 @@ export function AdCarousel({ ads, onPress, intervalMs = 5000 }: { ads: Ad[]; onP
 const s = StyleSheet.create({
   scroller: { borderRadius: radius.lg },
   card: { minHeight: 168, borderRadius: radius.lg, padding: space.lg, gap: space.sm, overflow: 'hidden', justifyContent: 'center' },
-  shape: { position: 'absolute', borderRadius: 999 },
-  shapeBig: { width: 220, height: 220, right: -70, top: -80 },
-  shapeSmall: { width: 120, height: 120, right: 40, bottom: -70 },
   sponsor: { fontSize: 11, fontWeight: '700', letterSpacing: 0.8 },
   headline: { fontSize: 21, lineHeight: 26, fontWeight: '700', maxWidth: '88%' },
   body: { fontSize: 14, lineHeight: 20, maxWidth: '88%' },

@@ -4,6 +4,8 @@ import { USER_SELECT as SELECT, type SessionUser } from "@/lib/auth";
 let n = 0;
 
 export async function resetDb() {
+  await db.planItem.deleteMany();
+  await db.plan.deleteMany();
   await db.ad.deleteMany();
   await db.verificationCode.deleteMany();
   await db.vote.deleteMany();
@@ -23,7 +25,7 @@ export function makeUser(role = "PILGRIM"): Promise<SessionUser> {
   return db.user.create({ data: { name: `User ${n}`, email: `user${n}@test.dev`, role }, select: SELECT });
 }
 
-export function makeProvider(type: "UMRAH" | "TRANSPORT", status = "APPROVED"): Promise<SessionUser> {
+export function makeProvider(type: string, status = "APPROVED"): Promise<SessionUser> {
   n++;
   return db.user.create({
     data: {

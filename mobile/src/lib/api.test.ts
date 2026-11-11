@@ -131,6 +131,28 @@ describe('createApi', () => {
     expect(calls.map((c) => `${c.init.method} ${c.url.replace('https://api.test/api/v1', '')}`)).toEqual(['GET /ads', 'POST /ads/ad%201/click']);
   });
 
+  it('covers the planner and provider applications', async () => {
+    const { api, calls } = setup(200, {});
+    await api.plans();
+    await api.savePlan(null, { title: 'Family Umrah' });
+    await api.savePlan('p 1', { title: 'Renamed' });
+    await api.addPlanItem('p1', { text: 'Buy dates', stage: 'MADINAH' });
+    await api.updatePlanItem('i1', { done: true });
+    await api.deletePlanItem('i1');
+    await api.deletePlan('p1');
+    await api.applyAsProvider({ type: 'GUIDE', companyName: 'Madinah Walks' });
+    expect(calls.map((c) => `${c.init.method} ${c.url.replace('https://api.test/api/v1', '')}`)).toEqual([
+      'GET /plans',
+      'POST /plans',
+      'PUT /plans/p%201',
+      'POST /plans/p1/items',
+      'PUT /plan-items/i1',
+      'DELETE /plan-items/i1',
+      'DELETE /plans/p1',
+      'POST /provider/apply',
+    ]);
+  });
+
   it('explains when the server cannot be reached', async () => {
     const fetch = jest.fn().mockRejectedValue(new TypeError('Network request failed')) as unknown as typeof globalThis.fetch;
     const api = createApi({ baseUrl: 'https://api.test', getToken: () => null, fetch });

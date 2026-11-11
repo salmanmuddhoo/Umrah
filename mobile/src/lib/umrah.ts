@@ -4,6 +4,8 @@ export const UMRAH_SECTIONS = [
   { value: 'transport', label: 'Transport' },
   { value: 'guide', label: 'How to perform' },
   { value: 'visa', label: 'Visa' },
+  { value: 'zamzam', label: 'Zamzam' },
+  { value: 'planner', label: 'Planner' },
 ] as const;
 
 export type UmrahSection = (typeof UMRAH_SECTIONS)[number]['value'];

@@ -28,6 +28,7 @@ export function safeNext(next: string, fallback: string) {
   return next.startsWith("/") && !next.startsWith("//") && !next.includes("\\") ? next : fallback;
 }
 
-export function roleForProviderType(type: "UMRAH" | "TRANSPORT" | null) {
-  return type === "UMRAH" ? "PROVIDER" : type === "TRANSPORT" ? "TRANSPORT" : "PILGRIM";
+/** Account role for someone registering as a provider of the given type (null = pilgrim). */
+export function roleForProviderType(type: string | null) {
+  return type === null ? "PILGRIM" : type === "TRANSPORT" ? "TRANSPORT" : "PROVIDER";
 }

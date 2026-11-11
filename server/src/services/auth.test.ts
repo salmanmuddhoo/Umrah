@@ -209,6 +209,16 @@ describe("registerUser", () => {
     expect(user.provider).toMatchObject({ type: "TRANSPORT", companyName: "Haramain Rides", status: "PENDING", phone: PHONE });
   });
 
+  it("registers any listed kind of service provider, and ignores unknown kinds", async () => {
+    const first = await verify(EMAIL);
+    const caterer = await auth.registerUser({ verificationToken: first.verificationToken, name: "Huda", pin: "4821", as: "CATERING", companyName: "Madinah Kitchen" });
+    expect((await db.user.findUniqueOrThrow({ where: { id: caterer }, include: { provider: true } })).provider).toMatchObject({ type: "CATERING", status: "PENDING" });
+
+    const second = await verify(PHONE);
+    const other = await auth.registerUser({ verificationToken: second.verificationToken, name: "Sam", pin: "4821", as: "casino", companyName: "X" });
+    expect(await db.user.findUniqueOrThrow({ where: { id: other }, include: { provider: true } })).toMatchObject({ role: "PILGRIM", provider: null });
+  });
+
   it("cannot be used to create an admin", async () => {
     const { verificationToken } = await verify(EMAIL);
     const id = await auth.registerUser({ verificationToken, name: "Aisha", pin: "4821", as: "admin", role: "ADMIN" });

@@ -27,7 +27,8 @@ export async function activeAds(now = new Date()) {
     headline: ad.headline,
     body: ad.body,
     cta: ad.cta,
-    theme: ad.theme,
+    // Ads created before the app was recoloured used "green" for the brand colour.
+    theme: ad.theme === "green" ? "brand" : ad.theme,
     packageId: live(ad.package) ? ad.packageId : null,
     serviceId: live(ad.service) ? ad.serviceId : null,
   }));
@@ -53,7 +54,7 @@ export function readAd(input: Input) {
     headline: str(input, "headline", 80),
     body: str(input, "body", 160),
     cta: str(input, "cta", 24) || "View",
-    theme: str(input, "theme", 10) || "green",
+    theme: str(input, "theme", 10) || "brand",
     packageId: kind === "package" && targetId ? targetId : null,
     serviceId: kind === "service" && targetId ? targetId : null,
     active: bool(input, "active"),

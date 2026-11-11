@@ -3,6 +3,7 @@ import { View } from 'react-native';
 
 import { Body, Button, Card, H1, H2, Muted, Notice, QueryState, Screen, Stat, styles } from '@/components/ui';
 import { useAuth } from '@/lib/auth';
+import { providerType } from '@/lib/constants';
 import { money, plural } from '@/lib/format';
 import { useQuery } from '@/lib/useQuery';
 
@@ -15,17 +16,25 @@ export default function ProviderDashboard() {
 
   const { provider, stats, commissionRate } = data;
   const isUmrah = provider.type === 'UMRAH';
+  const kind = providerType(provider.type);
+  const hasListings = !!kind?.listings;
 
   return (
     <Screen refreshing={refreshing} onRefresh={reload}>
-      <Muted>{isUmrah ? 'UMRAH PROVIDER' : 'TRANSPORT PROVIDER'}</Muted>
+      <Muted>SERVICE PROVIDER · {(kind?.label ?? provider.type).toUpperCase()}</Muted>
       <H1>{provider.companyName}</H1>
 
       {provider.status === 'PENDING' ? (
-        <Notice tone="warn">Your account is awaiting approval. You can set up your listings now — they will go live as soon as we have verified your business.</Notice>
+        <Notice tone="warn">
+          {hasListings
+            ? 'Your account is awaiting approval. You can set up your listings now — they will go live as soon as we have verified your business.'
+            : 'Your account is awaiting approval. We will verify your business and be in touch.'}
+        </Notice>
       ) : null}
       {provider.status === 'SUSPENDED' ? <Notice>Your account is suspended and your listings are hidden. Please contact support.</Notice> : null}
 
+      {hasListings ? (
+        <>
       <View style={styles.wrap}>
         <Stat label={isUmrah ? 'Active packages' : 'Active services'} value={stats.listings} />
         <Stat label="Requests awaiting you" value={stats.pending} />
@@ -35,6 +44,10 @@ export default function ProviderDashboard() {
 
       <Button title={stats.pending > 0 ? `Review bookings (${stats.pending} waiting)` : 'Bookings'} onPress={() => router.push('/provider/bookings')} />
       <Button title={isUmrah ? 'My packages' : 'My services'} variant="ghost" onPress={() => router.push('/provider/listings')} />
+        </>
+      ) : (
+        <Notice tone="ok">Your application is saved. The tools for listing {(kind?.label ?? 'this service').toLowerCase()} in the app are coming soon, and we will let you know when they are ready.</Notice>
+      )}
       <Button title="Company profile" variant="ghost" onPress={() => router.push('/provider/profile')} />
 
       <Card style={{ marginTop: 8 }}>

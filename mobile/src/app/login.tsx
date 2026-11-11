@@ -2,19 +2,13 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
 import { PinPad } from '@/components/PinPad';
-import { Body, Button, Chips, H1, Input, Muted, Notice, Screen } from '@/components/ui';
+import { Body, Button, H1, Input, Muted, Notice, Screen } from '@/components/ui';
 import { ApiError, errorMessage } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { providerType } from '@/lib/constants';
 import { parseIdentifier } from '@/lib/identifier';
 import type { CodeSent, Session } from '@/lib/types';
 import { validateSignUp } from '@/lib/validate';
-
-const KINDS = [
-  { value: 'pilgrim', label: 'Pilgrim' },
-  { value: 'umrah', label: 'Umrah provider' },
-  { value: 'transport', label: 'Transport provider' },
-] as const;
-type Kind = (typeof KINDS)[number]['value'];
 
 /**
  * identifier → code → then either:
@@ -36,7 +30,9 @@ export default function LoginScreen() {
   const [verificationToken, setVerificationToken] = useState('');
   const [resetting, setResetting] = useState(false);
   const [firstPin, setFirstPin] = useState('');
-  const [as, setAs] = useState<Kind>(params.as === 'umrah' || params.as === 'transport' ? params.as : 'pilgrim');
+  // Arriving from "Become a service provider" carries the chosen service; otherwise this is a pilgrim account.
+  const applying = providerType(params.as);
+  const as = applying?.value ?? 'pilgrim';
   const [details, setDetails] = useState({ name: '', companyName: '', city: '', country: '', licenseNo: '' });
   const setDetail = (key: keyof typeof details) => (value: string) => setDetails((d) => ({ ...d, [key]: value }));
 
@@ -69,7 +65,9 @@ export default function LoginScreen() {
   async function finish(session: Session | undefined) {
     if (!session) return;
     await signIn(session);
-    if (session.user.provider && step === 'confirmPin' && !resetting) router.replace('/provider');
+    if (session.user.provider && applying) router.replace('/provider');
+    // An existing member who came to apply still has to give their company details.
+    else if (applying) router.replace({ pathname: '/provider/apply', params: { type: applying.value } });
     // Otherwise return to whatever they were doing (a package to book, a post to comment on).
     else if (router.canGoBack()) router.back();
     else router.replace('/');
@@ -180,12 +178,11 @@ export default function LoginScreen() {
   if (step === 'details') {
     return (
       <Screen>
-        <H1>Create your account</H1>
+        <H1>{applying ? `Apply: ${applying.label}` : 'Create your account'}</H1>
         {error ? <Notice>{error}</Notice> : null}
-        <Chips label="I am a" options={KINDS} value={as} onChange={setAs} />
-        {as !== 'pilgrim' ? <Muted>We review every provider before their listings go live.</Muted> : null}
+        {applying ? <Muted>We review every provider before their listings go live.</Muted> : null}
         <Input label="Your name" value={details.name} onChangeText={setDetail('name')} autoComplete="name" maxLength={80} />
-        {as !== 'pilgrim' ? (
+        {applying ? (
           <>
             <Input label="Company name" value={details.companyName} onChangeText={setDetail('companyName')} maxLength={120} />
             <Input label="City" value={details.city} onChangeText={setDetail('city')} maxLength={80} />
