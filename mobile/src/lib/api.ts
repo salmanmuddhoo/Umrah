@@ -1,4 +1,6 @@
 import type {
+  CodeConfirmed,
+  CodeSent,
   Comment,
   Meta,
   MyBookings,
@@ -81,8 +83,13 @@ export function createApi(config: Config) {
   const id = encodeURIComponent;
 
   return {
-    login: (body: { email: string; password: string }) => post<Session>('/auth/login', body),
-    register: (body: Body) => post<Session>('/auth/register', body),
+    // Sign-in: code by email or WhatsApp → verification token → PIN.
+    startVerification: (identifier: string) => post<CodeSent>('/auth/start', { identifier }),
+    confirmCode: (identifier: string, code: string) => post<CodeConfirmed>('/auth/verify', { identifier, code }),
+    register: (body: Body & { verificationToken: string; pin: string }) => post<Session>('/auth/register', body),
+    login: (verificationToken: string, pin: string) => post<Session>('/auth/login', { verificationToken, pin }),
+    resetPin: (verificationToken: string, pin: string) => post<Session>('/auth/reset-pin', { verificationToken, pin }),
+    verifyPin: (pin: string) => post<{ ok: boolean }>('/auth/pin/verify', { pin }),
     me: () => get<{ user: User }>('/me'),
     meta: () => get<Meta>('/meta'),
 

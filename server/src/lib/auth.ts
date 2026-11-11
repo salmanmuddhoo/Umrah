@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { createHmac } from "node:crypto";
 import { SignJWT, jwtVerify } from "jose";
 import { db } from "./db";
 
@@ -19,7 +20,7 @@ function secret() {
 
 /** Signed token identifying a user. The web console keeps it in a cookie; the mobile app sends it as a Bearer token. */
 export async function signToken(userId: string) {
-  return new SignJWT({ sub: userId })
+  return new SignJWT({ sub: userId, use: "session" })
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE}s`)
@@ -28,13 +29,41 @@ export async function signToken(userId: string) {
 
 async function verifyToken(token: string) {
   try {
-    return (await jwtVerify(token, secret())).payload.sub ?? null;
+    const { payload } = await jwtVerify(token, secret());
+    return payload.use === "session" ? (payload.sub ?? null) : null;
   } catch {
     return null;
   }
 }
 
-const USER_SELECT = { id: true, name: true, email: true, role: true, provider: true } as const;
+export const USER_SELECT = { id: true, name: true, email: true, phone: true, role: true, provider: true } as const;
+
+const VERIFIED_FOR = 15 * 60;
+
+/** Short-lived proof that someone just confirmed a code sent to `identifier`. Needed to register, sign in or reset a PIN. */
+export async function signVerification(identifier: string) {
+  return new SignJWT({ sub: identifier, use: "verified" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(`${VERIFIED_FOR}s`)
+    .sign(secret());
+}
+
+/** The identifier a verification token vouches for, or null when it is missing, expired or not a verification token. */
+export async function readVerification(token: unknown) {
+  if (typeof token !== "string") return null;
+  try {
+    const { payload } = await jwtVerify(token, secret());
+    return payload.use === "verified" && payload.sub ? payload.sub : null;
+  } catch {
+    return null;
+  }
+}
+
+/** Keyed hash for one-time codes, so the database never holds a usable code. */
+export function hashCode(identifier: string, code: string) {
+  return createHmac("sha256", secret()).update(`${identifier}:${code}`).digest("hex");
+}
 
 /** The user behind an API request's `Authorization: Bearer <token>` header, or null. */
 export async function getApiUser(req: Request) {

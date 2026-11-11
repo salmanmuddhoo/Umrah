@@ -13,8 +13,15 @@ datasource db {
 model User {
   id           String   @id @default(cuid())
   name         String
-  email        String   @unique
-  passwordHash String
+  // People sign up with an email address or a phone number; at least one is always set.
+  email        String?  @unique
+  phone        String?  @unique // E.164, e.g. +447700900123
+  // bcrypt hash of the 4-digit PIN that unlocks the mobile app.
+  pinHash      String?
+  // Wrong PINs in a row. At MAX_PIN_ATTEMPTS the PIN stops working until it is reset with a verification code.
+  pinAttempts  Int      @default(0)
+  // Only platform admins have a password; it signs them in to the web console.
+  passwordHash String?
   role         String   @default("PILGRIM") // PILGRIM | PROVIDER | TRANSPORT | ADMIN
   createdAt    DateTime @default(now())
 
@@ -174,4 +181,17 @@ model Vote {
 model Setting {
   key   String @id
   value String
+}
+
+// One-time codes sent by email or WhatsApp to prove someone owns an address or number.
+model VerificationCode {
+  id         String    @id @default(cuid())
+  identifier String // the email or phone the code was sent to
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([identifier, createdAt])
 }

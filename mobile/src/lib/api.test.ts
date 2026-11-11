@@ -96,7 +96,31 @@ describe('createApi', () => {
 
   it('does not treat a failed sign-in as an expired session', async () => {
     const { api, onUnauthorized } = setup(401, { error: 'Incorrect email or password.' });
-    await expect(api.login({ email: 'a@b.co', password: 'wrong' })).rejects.toThrow('Incorrect email or password.');
+    await expect(api.login('verification-token', '0000')).rejects.toThrow('Incorrect email or password.');
+    expect(onUnauthorized).not.toHaveBeenCalled();
+  });
+
+  it('walks the sign-in steps: code, confirmation, then PIN', async () => {
+    const { api, calls } = setup(200, {});
+    await api.startVerification('+447700900123');
+    await api.confirmCode('+447700900123', '123456');
+    await api.register({ verificationToken: 'vt', pin: '4821', name: 'Aisha', as: 'pilgrim' });
+    await api.login('vt', '4821');
+    await api.resetPin('vt', '7310');
+    await api.verifyPin('4821');
+    expect(calls.map((c) => [c.url.replace('https://api.test/api/v1', ''), JSON.parse(c.init.body as string)])).toEqual([
+      ['/auth/start', { identifier: '+447700900123' }],
+      ['/auth/verify', { identifier: '+447700900123', code: '123456' }],
+      ['/auth/register', { verificationToken: 'vt', pin: '4821', name: 'Aisha', as: 'pilgrim' }],
+      ['/auth/login', { verificationToken: 'vt', pin: '4821' }],
+      ['/auth/reset-pin', { verificationToken: 'vt', pin: '7310' }],
+      ['/auth/pin/verify', { pin: '4821' }],
+    ]);
+  });
+
+  it('does not sign the user out for a wrong PIN on the lock screen', async () => {
+    const { api, onUnauthorized } = setup(403, { error: 'Wrong PIN. 4 attempts left.' }, 'valid-token');
+    await expect(api.verifyPin('0000')).rejects.toMatchObject({ status: 403, message: 'Wrong PIN. 4 attempts left.' });
     expect(onUnauthorized).not.toHaveBeenCalled();
   });
 

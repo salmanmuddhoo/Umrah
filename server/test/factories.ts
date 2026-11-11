@@ -1,10 +1,10 @@
 import { db } from "@/lib/db";
-import type { SessionUser } from "@/lib/auth";
+import { USER_SELECT as SELECT, type SessionUser } from "@/lib/auth";
 
 let n = 0;
-const SELECT = { id: true, name: true, email: true, role: true, provider: true } as const;
 
 export async function resetDb() {
+  await db.verificationCode.deleteMany();
   await db.vote.deleteMany();
   await db.comment.deleteMany();
   await db.post.deleteMany();
@@ -19,7 +19,7 @@ export async function resetDb() {
 
 export function makeUser(role = "PILGRIM"): Promise<SessionUser> {
   n++;
-  return db.user.create({ data: { name: `User ${n}`, email: `user${n}@test.dev`, passwordHash: "x", role }, select: SELECT });
+  return db.user.create({ data: { name: `User ${n}`, email: `user${n}@test.dev`, role }, select: SELECT });
 }
 
 export function makeProvider(type: "UMRAH" | "TRANSPORT", status = "APPROVED"): Promise<SessionUser> {
@@ -28,7 +28,6 @@ export function makeProvider(type: "UMRAH" | "TRANSPORT", status = "APPROVED"): 
     data: {
       name: `Provider ${n}`,
       email: `provider${n}@test.dev`,
-      passwordHash: "x",
       role: type === "UMRAH" ? "PROVIDER" : "TRANSPORT",
       provider: { create: { type, companyName: `Company ${n}`, phone: "+966 500 000 000", status } },
     },

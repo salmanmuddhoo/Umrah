@@ -52,7 +52,7 @@ export default function ProviderBookingsScreen() {
             <Text style={{ fontWeight: '600' }}>{b.customerName}</Text> · {b.contactPhone}
           </Text>
           <Muted>
-            {b.customerEmail} · requested {timeAgo(b.createdAt)}
+            {b.customerContact} · requested {timeAgo(b.createdAt)}
           </Muted>
           {b.notes ? (
             <View style={{ backgroundColor: colors.sand, borderRadius: 8, padding: space.sm }}>

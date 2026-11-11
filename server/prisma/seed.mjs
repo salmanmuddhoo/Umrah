@@ -3,19 +3,32 @@ import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const db = new PrismaClient();
-const PASSWORD = "password123";
+const PASSWORD = "password123"; // admin web console only
+const PIN = "1234"; // every demo account in the app
 const inDays = (n) => new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate() + n));
 const fee = (total, pct) => Math.round((total * pct) / 100);
 
 async function main() {
   if (process.env.NODE_ENV === "production") throw new Error("Refusing to seed a production database.");
 
-  for (const model of ["vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
+  for (const model of ["verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
     await db[model].deleteMany();
   }
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
-  const user = (name, email, role, provider) =>
-    db.user.create({ data: { name, email, role, passwordHash, provider: provider && { create: provider } }, include: { provider: true } });
+  const pinHash = await bcrypt.hash(PIN, 10);
+  // `contact` is an email address or an E.164 phone number, just like at sign-up.
+  const user = (name, contact, role, provider) =>
+    db.user.create({
+      data: {
+        name,
+        ...(contact.includes("@") ? { email: contact } : { phone: contact }),
+        role,
+        pinHash,
+        passwordHash: role === "ADMIN" ? passwordHash : null,
+        provider: provider && { create: provider },
+      },
+      include: { provider: true },
+    });
 
   await db.setting.createMany({
     data: [
@@ -26,7 +39,7 @@ async function main() {
 
   await user("Platform Admin", "admin@example.com", "ADMIN");
   const aisha = await user("Aisha Rahman", "pilgrim@example.com", "PILGRIM");
-  const yusuf = await user("Yusuf Ali", "yusuf@example.com", "PILGRIM");
+  const yusuf = await user("Yusuf Ali", "+447700900456", "PILGRIM"); // signed up by phone
   const noor = await user("Omar Siddiqui", "provider@example.com", "PROVIDER", {
     type: "UMRAH",
     companyName: "Noor Travel",
@@ -212,12 +225,16 @@ async function main() {
   ]);
   await post(aisha, "rituals", "Lost count during tawaf — what should I do?", "I was not sure whether I had done five or six rounds. What is the correct thing to do in that situation?");
 
-  console.log(`Seeded. Sign in with any of these (password: ${PASSWORD}):
-  admin@example.com      platform admin
+  console.log(`Seeded.
+
+Mobile app — sign in with one of these, then PIN ${PIN}.
+(No email/WhatsApp provider is configured in development, so the app shows the verification code.)
+  pilgrim@example.com    pilgrim
+  +447700900456          pilgrim who signed up by phone
   provider@example.com   Umrah provider (Noor Travel)
   transport@example.com  transport provider (Haramain Rides)
-  pilgrim@example.com    pilgrim`);
-}
 
+Web admin console (/admin): admin@example.com / ${PASSWORD}`);
+}
 
 main().finally(() => db.$disconnect());
