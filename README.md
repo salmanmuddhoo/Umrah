@@ -12,17 +12,19 @@ server/   The API the app talks to, plus the platform owner's admin console (web
 | Tab / area | What is in it | Who |
 | --- | --- | --- |
 | Home | Today's date in the Hijri and Gregorian calendars, a rotating banner of sponsored cards from suppliers, shortcut cards to every service, and the next departures | Everyone |
-| Umrah → Packages | Search, filter and book Umrah packages; seats are tracked so a package cannot be oversold | Everyone (sign in to book) |
-| Umrah → Transport | Book airport transfers, intercity rides and ziyarah tours | Everyone (sign in to book) |
-| Umrah → How to perform | Ihram, tawaf, sa'i and halq step by step, with duas in Arabic, transliteration and meaning. Bundled in the app, so it works offline | Everyone |
-| Umrah → Visa | Each type of visa with its cost, how to apply step by step, and links to the official Saudi sources | Everyone |
-| Umrah → Zamzam | Where to buy Zamzam water at Jeddah and Madinah airports, what it costs, and the rules for taking it home | Everyone |
-| Umrah → Planner | A personal trip plan: dates, travellers, notes, a countdown, and a checklist for every stage of the trip that starts pre-filled and can be ticked, added to and trimmed | Signed-in users |
+| Umrah → Services → Packages | Search, filter and book Umrah packages; seats are tracked so a package cannot be oversold | Everyone (sign in to book) |
+| Umrah → Services → Transport | Book airport transfers, intercity rides and ziyarah tours | Everyone (sign in to book) |
+| Umrah → Guides → How to perform Umrah | Ihram, tawaf, sa'i and halq step by step, with duas in Arabic, transliteration and meaning. Bundled in the app, so it works offline | Everyone |
+| Umrah → Guides → Visa | Each type of visa with its cost, how to apply step by step, and links to the official Saudi sources | Everyone |
+| Umrah → Guides → Zamzam | Where to buy Zamzam water at Jeddah and Madinah airports, what it costs, and the rules for taking it home | Everyone |
+| Planner (middle tab) | A personal trip plan: dates, travellers, notes, a countdown, and a checklist for every stage of the trip that starts pre-filled and can be ticked, added to and trimmed | Signed-in users |
 | Community | Topics, posts, up/down votes and threaded replies | Everyone (sign in to post) |
 | Account → Sign in / sign up | Email address or phone number → 6-digit code (by email, or WhatsApp for phone numbers) → choose a 4-digit PIN. The PIN is asked for every time the app is opened | Everyone |
 | Account → My bookings | Track and cancel bookings | Signed-in users |
 | Account → Become a service provider | One button for every kind of provider: choose the service you offer (Umrah packages, transport, hotels, catering, guides, other), then give your company details | Everyone |
 | Account → Provider dashboard | Earnings, listings (create / edit / hide), incoming bookings (confirm / decline / complete), company profile | Approved providers |
+
+The bottom bar has five tabs: Home, Umrah, Planner, Community, Account. The selected tab's icon springs up into a raised bubble. Inside Umrah, a switch separates **Services** (things you book) from **Guides** (things you read).
 
 The app uses light grey surfaces with an indigo accent (set in `mobile/src/theme.ts`; the admin console matches). Cards and sections animate in, lists load behind pulsing placeholders, banners have slowly drifting shapes, progress bars fill, buttons respond to touch, and the ad banner rotates on its own. All motion switches off when the phone is set to reduce motion.
 

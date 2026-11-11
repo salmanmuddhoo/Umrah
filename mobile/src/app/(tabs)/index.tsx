@@ -23,7 +23,7 @@ export const SHORTCUTS: Shortcut[] = [
   { title: 'Transport', text: 'Airport and intercity rides', icon: 'car', go: umrah('transport') },
   { title: 'How to perform Umrah', text: 'Every rite, with duas', icon: 'book', go: umrah('guide') },
   { title: 'Visa guide', text: 'Which visa, the cost, how to apply', icon: 'document-text', go: umrah('visa') },
-  { title: 'Umrah planner', text: 'Dates and a checklist for your trip', icon: 'checkbox', go: umrah('planner') },
+  { title: 'Umrah planner', text: 'Dates and a checklist for your trip', icon: 'checkbox', go: () => router.navigate('/planner') },
   { title: 'Zamzam water', text: 'Where to buy it and the cost', icon: 'water', go: umrah('zamzam') },
   { title: 'Community', text: 'Ask fellow pilgrims', icon: 'chatbubbles', go: () => router.navigate('/community') },
   { title: 'My bookings', text: 'Track your requests', icon: 'calendar', go: (signedIn) => router.push(signedIn ? '/bookings' : '/login') },
