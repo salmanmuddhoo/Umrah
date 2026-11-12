@@ -26,7 +26,7 @@ server/   The API the app talks to, plus the platform owner's admin console (web
 
 The bottom bar has five tabs: Home, Umrah, Planner, Community, Account. The selected tab's icon springs up into a raised bubble. Inside Umrah, a switch separates **Services** (things you book) from **Guides** (things you read).
 
-The app uses light grey surfaces with an indigo accent (set in `mobile/src/theme.ts`; the admin console matches). Cards and sections animate in, lists load behind pulsing placeholders, banners have slowly drifting shapes, progress bars fill, buttons respond to touch, and the ad banner rotates on its own. All motion switches off when the phone is set to reduce motion.
+The app is emerald green on very light green surfaces with gold highlights, and banners carry a tiled eight-pointed-star pattern (colours in `mobile/src/theme.ts`; the admin console matches). Cards and sections animate in, lists load behind pulsing placeholders, banners have slowly drifting shapes, progress bars fill, buttons respond to touch, and the ad banner rotates on its own. All motion switches off when the phone is set to reduce motion.
 
 ### Adding a new kind of service provider
 

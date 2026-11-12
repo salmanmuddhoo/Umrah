@@ -6,10 +6,10 @@ import { colors, radius, space } from '@/theme';
 
 import { FloatingShapes, PressableScale, useReduceMotion } from './motion';
 
-const THEMES: Record<string, { bg: string; fg: string; soft: string; button: string; buttonText: string; shape: string }> = {
-  brand: { bg: colors.brand700, fg: colors.white, soft: colors.brand100, button: colors.gold400, buttonText: colors.brand900, shape: '#ffffff14' },
-  gold: { bg: colors.gold100, fg: colors.text, soft: colors.gold600, button: colors.brand700, buttonText: colors.white, shape: '#f5a52433' },
-  night: { bg: '#171a2e', fg: colors.white, soft: '#b9bfdc', button: colors.white, buttonText: '#171a2e', shape: '#ffffff12' },
+const THEMES: Record<string, { bg: string; fg: string; soft: string; button: string; buttonText: string; shape: string; pattern: string }> = {
+  brand: { bg: colors.brand700, fg: colors.white, soft: colors.brand100, button: colors.gold400, buttonText: colors.brand900, shape: '#ffffff14', pattern: colors.patternGold },
+  gold: { bg: colors.gold100, fg: colors.brand900, soft: colors.gold600, button: colors.brand700, buttonText: colors.white, shape: '#e6bf4a40', pattern: colors.patternEmerald },
+  night: { bg: colors.brand900, fg: colors.white, soft: colors.brand200, button: colors.gold400, buttonText: colors.brand900, shape: '#ffffff12', pattern: colors.patternGold },
 };
 
 /**
@@ -55,7 +55,7 @@ export function AdCarousel({ ads, onPress, intervalMs = 5000 }: { ads: Ad[]; onP
               disabled={!linked}
               onPress={() => onPress(ad)}
               style={[s.card, { width: width || undefined, backgroundColor: t.bg }]}>
-              <FloatingShapes color={t.shape} />
+              <FloatingShapes color={t.shape} pattern={t.pattern} />
               <Text style={[s.sponsor, { color: t.soft }]}>SPONSORED · {ad.advertiser.toUpperCase()}</Text>
               <Text style={[s.headline, { color: t.fg }]} numberOfLines={2}>
                 {ad.headline}

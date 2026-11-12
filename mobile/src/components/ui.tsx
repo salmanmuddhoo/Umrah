@@ -260,13 +260,13 @@ export const BUTTON_DEPTH_SMALL = 3;
 
 const buttonStyles = StyleSheet.create({
   // The lighter top edge reads as light catching the face.
-  primary: { backgroundColor: colors.brand700, borderTopWidth: 1, borderTopColor: '#6b70d9' },
-  gold: { backgroundColor: colors.gold400, borderTopWidth: 1, borderTopColor: '#ffc65c' },
-  ghost: { backgroundColor: colors.white, borderWidth: 1, borderColor: '#d5d9e3' },
+  primary: { backgroundColor: colors.brand700, borderTopWidth: 1, borderTopColor: '#34a37f' },
+  gold: { backgroundColor: colors.gold400, borderTopWidth: 1, borderTopColor: '#f3d57a' },
+  ghost: { backgroundColor: colors.white, borderWidth: 1, borderColor: '#cfe0d6' },
   danger: { backgroundColor: colors.white, borderWidth: 1, borderColor: '#f5b5b5' },
 });
 /** The darker ledge each face sits on. */
-const buttonLedges = { primary: colors.brand900, gold: '#b9770a', ghost: '#c3c8d4', danger: '#e39a9a' } as const;
+const buttonLedges = { primary: colors.brand900, gold: '#b08d1e', ghost: '#b9cfc3', danger: '#e39a9a' } as const;
 const buttonTextStyles = StyleSheet.create({
   primary: { color: colors.white },
   gold: { color: colors.text },

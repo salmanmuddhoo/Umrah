@@ -108,8 +108,27 @@ export function SkeletonList({ count = 3 }: { count?: number }) {
   );
 }
 
-/** Soft circles that drift slowly behind a banner's content. Purely decorative. */
-export function FloatingShapes({ color = '#ffffff1a' }: { color?: string }) {
+const TILE = 44;
+
+/**
+ * A tiled pattern of eight-pointed stars (two overlapping squares), the motif
+ * found throughout Islamic geometric art. Fills its parent; purely decorative.
+ */
+export function StarPattern({ color = colors.patternGold, count = 54 }: { color?: string; count?: number }) {
+  return (
+    <View pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[StyleSheet.absoluteFill, s.pattern]}>
+      {Array.from({ length: count }, (_, i) => (
+        <View key={i} style={s.tile}>
+          <View style={[s.star, { borderColor: color }]} />
+          <View style={[s.star, { borderColor: color, transform: [{ rotate: '45deg' }] }]} />
+        </View>
+      ))}
+    </View>
+  );
+}
+
+/** A banner's backdrop: the star pattern with soft circles drifting slowly over it. Purely decorative. */
+export function FloatingShapes({ color = '#ffffff1a', pattern = colors.patternGold }: { color?: string; pattern?: string }) {
   const reduce = useReduceMotion();
   const slow = useLoop(4200, !reduce);
   const slower = useLoop(6000, !reduce);
@@ -117,6 +136,7 @@ export function FloatingShapes({ color = '#ffffff1a' }: { color?: string }) {
   const down = slower.interpolate({ inputRange: [0, 1], outputRange: [0, 16] });
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <StarPattern color={pattern} />
       <Animated.View style={[s.shape, { width: 190, height: 190, right: -60, top: -70, backgroundColor: color, transform: [{ translateY: up }] }]} />
       <Animated.View style={[s.shape, { width: 110, height: 110, right: 70, bottom: -60, backgroundColor: color, transform: [{ translateY: down }] }]} />
       <Animated.View style={[s.shape, { width: 60, height: 60, left: -20, bottom: -24, backgroundColor: color, transform: [{ translateY: up }] }]} />
@@ -145,6 +165,9 @@ export function ProgressBar({ value, color = colors.brand700, label }: { value: 
 
 const s = StyleSheet.create({
   shape: { position: 'absolute', borderRadius: 999 },
+  pattern: { flexDirection: 'row', flexWrap: 'wrap', overflow: 'hidden' },
+  tile: { width: TILE, height: TILE, alignItems: 'center', justifyContent: 'center' },
+  star: { position: 'absolute', width: TILE * 0.5, height: TILE * 0.5, borderWidth: 1 },
   skeletonCard: { backgroundColor: colors.white, borderRadius: radius.lg, padding: space.lg, gap: space.md, borderWidth: 1, borderColor: '#0000000d' },
   track: { height: 8, borderRadius: radius.pill, backgroundColor: colors.slateBg, overflow: 'hidden' },
 });
