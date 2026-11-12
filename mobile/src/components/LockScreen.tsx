@@ -6,6 +6,7 @@ import { ApiError, errorMessage } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { colors, space } from '@/theme';
 
+import { Logo } from './Logo';
 import { StarPattern } from './motion';
 import { PinPad } from './PinPad';
 import { Button } from './ui';
@@ -33,7 +34,8 @@ export function LockScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.sand }}>
       <StarPattern color={colors.patternEmerald} count={180} />
       <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: space.xl, gap: space.md }}>
-        <Text style={{ textAlign: 'center', color: colors.gold600, fontWeight: '700', letterSpacing: 1 }}>MY UMMAH</Text>
+        <Logo size={72} style={{ alignSelf: 'center' }} />
+        <Text style={{ textAlign: 'center', color: colors.gold600, fontWeight: '700', letterSpacing: 1 }}>ONE UMMAH</Text>
         {mustReset ? (
           <Text accessibilityRole="alert" style={{ textAlign: 'center', fontSize: 15, lineHeight: 22, color: colors.danger }}>
             {error}

@@ -122,7 +122,7 @@ describe("sendVerificationCode", () => {
 
   it("sends email through Resend", async () => {
     vi.stubEnv("RESEND_API_KEY", "key");
-    vi.stubEnv("EMAIL_FROM", "My Ummah <verify@example.com>");
+    vi.stubEnv("EMAIL_FROM", "One Ummah <verify@example.com>");
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status: 200 }));
     await messaging.sendVerificationCode({ kind: "email", value: EMAIL }, "654321");
     const [url, init] = fetchMock.mock.calls[0];

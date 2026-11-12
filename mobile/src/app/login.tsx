@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 
+import { Logo } from '@/components/Logo';
 import { PinPad } from '@/components/PinPad';
 import { Body, Button, H1, Input, Muted, Notice, Screen } from '@/components/ui';
 import { ApiError, errorMessage } from '@/lib/api';
@@ -107,7 +108,8 @@ export default function LoginScreen() {
   if (step === 'identifier') {
     return (
       <Screen>
-        <H1>Welcome to My Ummah</H1>
+        <Logo size={64} />
+        <H1>Welcome to One Ummah</H1>
         <Body>Enter your email address or phone number. We will send you a code to confirm it is yours.</Body>
         {error ? <Notice>{error}</Notice> : null}
         <Input
@@ -207,7 +209,7 @@ export default function LoginScreen() {
       <Screen>
         <PinPad
           title={resetting ? 'Choose a new PIN' : 'Choose a 4-digit PIN'}
-          subtitle="You will enter this PIN each time you open My Ummah."
+          subtitle="You will enter this PIN each time you open One Ummah."
           error={error}
           onComplete={(pin) => {
             setFirstPin(pin);

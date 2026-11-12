@@ -2,6 +2,7 @@ import { router, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { GradientFill } from '@/components/Gradient';
 import { LockScreen } from '@/components/LockScreen';
 import { QueryState } from '@/components/ui';
 import { AuthProvider, useAuth } from '@/lib/auth';
@@ -38,7 +39,8 @@ function Screens() {
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: colors.brand700 },
+        headerStyle: { backgroundColor: colors.brand800 },
+        headerBackground: () => <GradientFill name="brand" direction="diagonal" />,
         headerTintColor: colors.white,
         headerTitleStyle: { fontWeight: '600' },
         headerBackButtonDisplayMode: 'minimal',

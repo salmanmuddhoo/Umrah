@@ -20,6 +20,11 @@ describe('PackageCard', () => {
     expect(screen.queryByText('Meals')).toBeNull();
   });
 
+  it('shows its rating', async () => {
+    await render(<PackageCard pkg={pkg} onPress={() => {}} />);
+    expect(screen.getByLabelText('Rated 4.5 out of 5 from 12 reviews')).toBeTruthy();
+  });
+
   it('says when a package is fully booked', async () => {
     await render(<PackageCard pkg={{ ...pkg, seatsLeft: 0 }} onPress={() => {}} />);
     expect(screen.getByText('Fully booked')).toBeTruthy();
@@ -40,6 +45,13 @@ describe('ServiceCard', () => {
     expect(screen.getByText('SUV')).toBeTruthy();
     expect(screen.getByText('Up to 7 passengers')).toBeTruthy();
     expect(screen.getByText('$75.50')).toBeTruthy();
+  });
+});
+
+describe('ServiceCard ratings', () => {
+  it('says when a service has no reviews yet', async () => {
+    await render(<ServiceCard service={service} onPress={() => {}} />);
+    expect(screen.getByText('No reviews yet')).toBeTruthy();
   });
 });
 

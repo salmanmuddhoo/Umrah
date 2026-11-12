@@ -32,6 +32,7 @@ model User {
   comments          Comment[]
   votes             Vote[]
   plans             Plan[]
+  reviews           Review[]
 }
 
 model Provider {
@@ -78,6 +79,7 @@ model Package {
 
   bookings PackageBooking[]
   ads      Ad[]
+  reviews  Review[]
 
   @@index([providerId])
 }
@@ -116,6 +118,7 @@ model TransportService {
 
   bookings TransportBooking[]
   ads      Ad[]
+  reviews  Review[]
 
   @@index([providerId])
 }
@@ -247,4 +250,25 @@ model PlanItem {
   createdAt DateTime @default(now())
 
   @@index([planId])
+}
+
+// A pilgrim's rating of a package or transport service: one per person per listing, editable.
+model Review {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Exactly one of these is set.
+  packageId String?
+  package   Package?          @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  serviceId String?
+  service   TransportService? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  rating    Int // 1–5
+  comment   String            @default("")
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([userId, packageId])
+  @@unique([userId, serviceId])
+  @@index([packageId])
+  @@index([serviceId])
 }

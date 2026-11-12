@@ -5,6 +5,7 @@ import { FlatList, RefreshControl, View } from 'react-native';
 import { PackageCard } from '@/components/PackageCard';
 import { FadeInUp, stagger } from '@/components/motion';
 import { Chips, Empty, Input, QueryState, styles } from '@/components/ui';
+import { Page } from '@/components/Gradient';
 import { useAuth } from '@/lib/auth';
 import { useQuery } from '@/lib/useQuery';
 import { colors, space } from '@/theme';
@@ -32,36 +33,38 @@ export function PackagesList() {
   const { data, error, loading, refreshing, reload } = useQuery(`packages:${q}:${sort}:${stars}`, () => api.packages({ q, sort, stars }));
 
   return (
-    <FlatList
-      style={styles.screen}
-      contentContainerStyle={styles.listContent}
-      keyboardShouldPersistTaps="handled"
-      data={data ?? []}
-      keyExtractor={(p) => p.id}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={colors.brand700} />}
-      ListHeaderComponent={
-        <View style={{ gap: space.md }}>
-          <Input
-            label="Search packages"
-            placeholder="City, hotel or provider"
-            value={text}
-            onChangeText={setText}
-            onSubmitEditing={() => setQ(text.trim())}
-            onBlur={() => setQ(text.trim())}
-            returnKeyType="search"
-            autoCorrect={false}
-          />
-          <Chips options={SORTS} value={sort} onChange={setSort} />
-          <Chips options={STARS} value={stars} onChange={setStars} />
-          {!data ? <QueryState loading={loading} error={error} onRetry={reload} /> : null}
-        </View>
-      }
-      ListEmptyComponent={data ? <Empty>No packages match your search. Try widening your filters.</Empty> : undefined}
-      renderItem={({ item, index }) => (
-        <FadeInUp delay={stagger(index)}>
-          <PackageCard pkg={item} onPress={() => router.push({ pathname: '/packages/[id]', params: { id: item.id } })} />
-        </FadeInUp>
-      )}
-    />
+    <Page>
+      <FlatList
+        style={styles.screen}
+        contentContainerStyle={styles.listContent}
+        keyboardShouldPersistTaps="handled"
+        data={data ?? []}
+        keyExtractor={(p) => p.id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={reload} tintColor={colors.brand700} />}
+        ListHeaderComponent={
+          <View style={{ gap: space.md }}>
+            <Input
+              label="Search packages"
+              placeholder="City, hotel or provider"
+              value={text}
+              onChangeText={setText}
+              onSubmitEditing={() => setQ(text.trim())}
+              onBlur={() => setQ(text.trim())}
+              returnKeyType="search"
+              autoCorrect={false}
+            />
+            <Chips options={SORTS} value={sort} onChange={setSort} />
+            <Chips options={STARS} value={stars} onChange={setStars} />
+            {!data ? <QueryState loading={loading} error={error} onRetry={reload} /> : null}
+          </View>
+        }
+        ListEmptyComponent={data ? <Empty>No packages match your search. Try widening your filters.</Empty> : undefined}
+        renderItem={({ item, index }) => (
+          <FadeInUp delay={stagger(index)}>
+            <PackageCard pkg={item} onPress={() => router.push({ pathname: '/packages/[id]', params: { id: item.id } })} />
+          </FadeInUp>
+        )}
+      />
+    </Page>
   );
 }

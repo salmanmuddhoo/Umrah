@@ -153,6 +153,19 @@ describe('createApi', () => {
     ]);
   });
 
+  it('reads, posts and deletes reviews', async () => {
+    const { api, calls } = setup(200, {});
+    await api.reviews('package', 'p 1');
+    await api.saveReview('transport', 's1', { rating: 5, comment: 'Great' });
+    await api.deleteReview('r1');
+    expect(calls.map((c) => `${c.init.method} ${c.url.replace('https://api.test/api/v1', '')}`)).toEqual([
+      'GET /reviews/package/p%201',
+      'POST /reviews/transport/s1',
+      'DELETE /reviews/r1',
+    ]);
+    expect(JSON.parse(calls[1].init.body as string)).toEqual({ rating: 5, comment: 'Great' });
+  });
+
   it('explains when the server cannot be reached', async () => {
     const fetch = jest.fn().mockRejectedValue(new TypeError('Network request failed')) as unknown as typeof globalThis.fetch;
     const api = createApi({ baseUrl: 'https://api.test', getToken: () => null, fetch });

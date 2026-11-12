@@ -33,8 +33,8 @@ function sendEmail(to: string, code: string) {
     {
       from: process.env.EMAIL_FROM,
       to: [to],
-      subject: `${code} is your My Ummah code`,
-      text: `Your My Ummah verification code is ${code}.\n\nIt expires in ${MINUTES_VALID} minutes. If you did not ask for it, you can ignore this email.`,
+      subject: `${code} is your One Ummah code`,
+      text: `Your One Ummah verification code is ${code}.\n\nIt expires in ${MINUTES_VALID} minutes. If you did not ask for it, you can ignore this email.`,
     },
     "Resend",
   );

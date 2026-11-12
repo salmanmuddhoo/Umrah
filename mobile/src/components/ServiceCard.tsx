@@ -6,6 +6,7 @@ import type { Service } from '@/lib/types';
 import { colors, space } from '@/theme';
 
 import { PressableScale } from './motion';
+import { RatingSummary } from './Reviews';
 import { Badge, Muted, styles } from './ui';
 
 export function ServiceCard({ service, onPress }: { service: Service; onPress: () => void }) {
@@ -23,6 +24,7 @@ export function ServiceCard({ service, onPress }: { service: Service; onPress: (
         {service.fromPlace} → {service.toPlace}
       </Text>
       <Muted>Up to {plural(service.capacity, 'passenger')}</Muted>
+      <RatingSummary average={service.ratingAverage} count={service.ratingCount} />
       <View style={[styles.between, { marginTop: space.xs }]}>
         <Muted>by {service.provider.companyName}</Muted>
         <View>

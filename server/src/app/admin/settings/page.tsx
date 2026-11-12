@@ -12,7 +12,7 @@ export default async function AdminSettings() {
     <ActionForm action={saveCommission} className="card max-w-lg space-y-4 p-6">
       <h2 className="text-lg font-semibold text-brand-900">Commission rates</h2>
       <p className="muted">
-        The percentage My Ummah keeps from each confirmed booking. Changes apply to new bookings only — existing bookings
+        The percentage One Ummah keeps from each confirmed booking. Changes apply to new bookings only — existing bookings
         keep the rate they were made at.
       </p>
       <Field label="Umrah packages (%)">

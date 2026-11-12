@@ -11,6 +11,7 @@ import * as catalog from "@/services/catalog";
 import * as community from "@/services/community";
 import * as planner from "@/services/planner";
 import * as provider from "@/services/provider";
+import * as reviews from "@/services/reviews";
 import type { Method, Route } from "./router";
 
 export type Ctx = { user: SessionUser | null; params: Record<string, string>; query: URLSearchParams; body: Input };
@@ -56,6 +57,11 @@ open("GET", "/packages", ({ query }) => catalog.listPackages(query));
 open("GET", "/packages/:id", ({ params, user }) => catalog.getPackage(params.id, user));
 open("GET", "/transport", ({ query }) => catalog.listServices(query));
 open("GET", "/transport/:id", ({ params, user }) => catalog.getService(params.id, user));
+
+// Reviews: :kind is "package" or "transport"
+open("GET", "/reviews/:kind/:id", ({ user, params }) => reviews.listReviews(params.kind, params.id, user));
+authed("POST", "/reviews/:kind/:id", ({ user, params, body }) => reviews.saveReview(user, params.kind, params.id, body));
+authed("DELETE", "/reviews/:id", ({ user, params }) => reviews.deleteReview(user, params.id));
 
 // Bookings
 authed("POST", "/packages/:id/book", ({ user, params, body }) => bookings.bookPackage(user, params.id, body));

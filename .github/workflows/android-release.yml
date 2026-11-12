@@ -126,7 +126,7 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
-          name: my-ummah-android-${{ env.APP_VERSION }}-build${{ github.run_number }}${{ env.SIGNED != 'true' && '-UNSIGNED-test-only' || '' }}
+          name: one-ummah-android-${{ env.APP_VERSION }}-build${{ github.run_number }}${{ env.SIGNED != 'true' && '-UNSIGNED-test-only' || '' }}
           if-no-files-found: error
           retention-days: ${{ github.event_name == 'pull_request' && 7 || 90 }}
           path: |
@@ -136,7 +136,7 @@ jobs:
       - name: Summary
         run: |
           {
-            echo "### My Ummah Android ${APP_VERSION} (build ${GITHUB_RUN_NUMBER})"
+            echo "### One Ummah Android ${APP_VERSION} (build ${GITHUB_RUN_NUMBER})"
             if [ "$IS_RELEASE" = "true" ]; then echo "Signed release build. Download the artifact below: upload the \`.aab\` to Google Play, or install the \`.apk\` directly on a phone.";
             else echo "Verification build for this pull request. It is not for distribution."; fi
           } >> "$GITHUB_STEP_SUMMARY"

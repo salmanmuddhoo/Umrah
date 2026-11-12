@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { RatingSummary, Reviews } from '@/components/Reviews';
 import { Badge, Body, Button, Card, H1, H2, Input, Muted, Notice, QueryState, Screen, Stars, styles } from '@/components/ui';
 import { errorMessage } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -47,6 +48,7 @@ export default function PackageScreen() {
     <Screen refreshing={refreshing} onRefresh={reload}>
       {pkg.isPublic === false ? <Notice tone="warn">Preview only — pilgrims cannot see this package yet.</Notice> : null}
       <H1>{pkg.title}</H1>
+      <RatingSummary average={pkg.ratingAverage} count={pkg.ratingCount} />
       <Muted>
         by {pkg.provider.companyName}
         {pkg.provider.city ? ` · ${[pkg.provider.city, pkg.provider.country].filter(Boolean).join(', ')}` : ''}
@@ -134,6 +136,12 @@ export default function PackageScreen() {
           </>
         )}
       </Card>
+
+      {pkg.isPublic !== false ? (
+        <View style={{ marginTop: 8 }}>
+          <Reviews kind="package" listingId={pkg.id} canReview={user?.provider?.id !== pkg.provider.id} onChange={reload} />
+        </View>
+      ) : null}
     </Screen>
   );
 }

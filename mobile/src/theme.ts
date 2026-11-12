@@ -29,5 +29,24 @@ export const colors = {
   patternEmerald: '#0478571f',
 } as const;
 
+/**
+ * Two-colour gradients used across the app, as [start, end]. Every pair is
+ * dark or light enough at both ends for its text to stay readable (theme.test.ts).
+ */
+export const gradients = {
+  /** Headers, banners and primary buttons: deep emerald blending into teal. */
+  brand: ['#064e3b', '#0f766e'],
+  /** Darker banners. */
+  night: ['#022c22', '#064e3b'],
+  /** Gold buttons and badges. */
+  gold: ['#f3d57a', '#e6bf4a'],
+  /** Pale gold cards. */
+  goldSoft: ['#fdf6e3', '#f3e2a6'],
+  /** Page backgrounds: light green blending into light gold. */
+  page: ['#e1f5ea', '#fbf3dc'],
+} as const;
+
+export type GradientName = keyof typeof gradients;
+
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 } as const;
 export const radius = { md: 10, lg: 16, pill: 999 } as const;

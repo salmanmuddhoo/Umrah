@@ -4,6 +4,7 @@ import { Animated, StyleSheet, type ColorValue } from 'react-native';
 
 import { colors } from '@/theme';
 
+import { GradientFill } from './Gradient';
 import { NATIVE, useReduceMotion } from './motion';
 
 /** How far the selected tab's icon rises above the others, in points. */
@@ -33,7 +34,9 @@ export function TabIcon({ name, focused, color, size }: { name: React.ComponentP
   return (
     // The wrapper keeps the icon's normal size so the label below is not pushed out of the bar; the bubble overflows it.
     <Animated.View style={[s.wrap, { width: size, height: size, transform: [{ translateY }, { scale }] }]}>
-      <Animated.View style={[s.bubble, { opacity: lift }]} />
+      <Animated.View style={[s.bubble, { opacity: lift }]}>
+        <GradientFill name="brand" />
+      </Animated.View>
       <Ionicons name={name} size={size} color={focused ? colors.white : (color as string)} />
     </Animated.View>
   );
@@ -42,5 +45,5 @@ export function TabIcon({ name, focused, color, size }: { name: React.ComponentP
 const s = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
   // The white ring makes the bubble look like it stands proud of the bar.
-  bubble: { position: 'absolute', top: -BUBBLE_PAD, right: -BUBBLE_PAD, bottom: -BUBBLE_PAD, left: -BUBBLE_PAD, borderRadius: 999, backgroundColor: colors.brand700, borderWidth: 3, borderColor: colors.white },
+  bubble: { position: 'absolute', top: -BUBBLE_PAD, right: -BUBBLE_PAD, bottom: -BUBBLE_PAD, left: -BUBBLE_PAD, borderRadius: 999, overflow: 'hidden', backgroundColor: colors.brand700, borderWidth: 3, borderColor: colors.white },
 });

@@ -3,6 +3,7 @@ import { Tabs } from 'expo-router/js-tabs';
 import type { ColorValue } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { GradientFill } from '@/components/Gradient';
 import { TabIcon, TAB_LIFT } from '@/components/TabIcon';
 import { colors } from '@/theme';
 
@@ -22,7 +23,8 @@ export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerStyle: { backgroundColor: colors.brand700 },
+        headerStyle: { backgroundColor: colors.brand800 },
+        headerBackground: () => <GradientFill name="brand" />,
         headerTintColor: colors.white,
         headerTitleStyle: { fontWeight: '600' },
         tabBarActiveTintColor: colors.brand700,
@@ -32,7 +34,7 @@ export default function TabsLayout() {
         tabBarStyle: { height: TAB_BAR_HEIGHT + insets.bottom, paddingTop: TAB_LIFT / 2, overflow: 'visible' },
         sceneStyle: { backgroundColor: colors.sand },
       }}>
-      <Tabs.Screen name="index" options={{ title: 'Home', headerTitle: 'My Ummah', tabBarIcon: icon('home') }} />
+      <Tabs.Screen name="index" options={{ title: 'Home', headerTitle: 'One Ummah', tabBarIcon: icon('home') }} />
       <Tabs.Screen name="umrah" options={{ title: 'Umrah', tabBarIcon: icon('moon') }} />
       {/* The planner sits in the middle of the bar. */}
       <Tabs.Screen name="planner" options={{ title: 'Planner', headerTitle: 'Umrah planner', tabBarIcon: icon('checkbox') }} />

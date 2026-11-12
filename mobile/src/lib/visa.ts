@@ -15,7 +15,7 @@ export const VISA_ROUTES: VisaRoute[] = [
     who: 'For anyone travelling mainly to perform Umrah.',
     points: [
       'Arranged through a licensed Umrah agent or the official Nusuk platform.',
-      'Usually part of a package: when a package on My Ummah lists “Visa” as included, the provider applies for you.',
+      'Usually part of a package: when a package on One Ummah lists “Visa” as included, the provider applies for you.',
       'Tied to your Umrah booking, so your accommodation and transport are normally confirmed before it is issued.',
     ],
   },

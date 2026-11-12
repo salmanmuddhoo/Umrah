@@ -2,6 +2,7 @@ import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
+import { GradientFill } from '@/components/Gradient';
 import { FadeInUp, FloatingShapes, ProgressBar, stagger } from '@/components/motion';
 import { Body, Button, Card, Chips, confirm, H2, Input, Muted, Notice, QueryState, Screen, styles } from '@/components/ui';
 import { errorMessage } from '@/lib/api';
@@ -78,6 +79,7 @@ export default function PlanScreen() {
   return (
     <Screen refreshing={refreshing} onRefresh={reload}>
       <View style={hero}>
+        <GradientFill name="brand" />
         <FloatingShapes />
         <Text accessibilityRole="header" style={{ color: colors.white, fontSize: 22, fontWeight: '700' }}>
           {plan.title}

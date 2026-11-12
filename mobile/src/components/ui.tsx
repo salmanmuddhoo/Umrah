@@ -20,19 +20,22 @@ import {
 import { statusLabel } from '@/lib/format';
 import { colors, radius, space } from '@/theme';
 
+import { GradientFill, Page } from './Gradient';
 import { NATIVE, SkeletonList, useReduceMotion } from './motion';
 
 /** A scrolling page with standard padding and optional pull-to-refresh. */
 export function Screen({ children, refreshing, onRefresh }: { children: ReactNode; refreshing?: boolean; onRefresh?: () => void }) {
   return (
-    <ScrollView
-      style={styles.screen}
-      contentContainerStyle={styles.screenContent}
-      keyboardShouldPersistTaps="handled"
-      automaticallyAdjustKeyboardInsets
-      refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.brand700} /> : undefined}>
-      {children}
-    </ScrollView>
+    <Page>
+      <ScrollView
+        style={styles.screen}
+        contentContainerStyle={styles.screenContent}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
+        refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.brand700} /> : undefined}>
+        {children}
+      </ScrollView>
+    </Page>
   );
 }
 
@@ -41,10 +44,18 @@ export function Card({ children, style }: { children: ReactNode; style?: StylePr
 }
 
 export function H1({ children }: { children: ReactNode }) {
-  return <Text accessibilityRole="header" style={styles.h1}>{children}</Text>;
+  return (
+    <Text accessibilityRole="header" style={styles.h1}>
+      {children}
+    </Text>
+  );
 }
 export function H2({ children }: { children: ReactNode }) {
-  return <Text accessibilityRole="header" style={styles.h2}>{children}</Text>;
+  return (
+    <Text accessibilityRole="header" style={styles.h2}>
+      {children}
+    </Text>
+  );
 }
 export function Body({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
   return <Text style={[styles.body, style]}>{children}</Text>;
@@ -88,6 +99,7 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled,
       style={[{ paddingBottom: depth }, off && styles.dim, style]}>
       <View style={[styles.buttonLedge, { top: depth, backgroundColor: buttonLedges[variant] }]} />
       <Animated.View style={[styles.button, small && styles.buttonSmall, buttonStyles[variant], { transform: [{ translateY }] }]}>
+        {variant === 'primary' ? <GradientFill name="brand" /> : variant === 'gold' ? <GradientFill name="gold" /> : null}
         {loading ? (
           <ActivityIndicator color={filled ? colors.white : colors.brand700} />
         ) : (
@@ -102,12 +114,7 @@ export function Input({ label, hint, style, ...props }: TextInputProps & { label
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <TextInput
-        accessibilityLabel={label}
-        placeholderTextColor="#94a3b8"
-        style={[styles.input, props.multiline && styles.inputMultiline, style]}
-        {...props}
-      />
+      <TextInput accessibilityLabel={label} placeholderTextColor="#94a3b8" style={[styles.input, props.multiline && styles.inputMultiline, style]} {...props} />
       {hint ? <Text style={styles.hint}>{hint}</Text> : null}
     </View>
   );
@@ -269,20 +276,21 @@ const buttonStyles = StyleSheet.create({
 const buttonLedges = { primary: colors.brand900, gold: '#b08d1e', ghost: '#b9cfc3', danger: '#e39a9a' } as const;
 const buttonTextStyles = StyleSheet.create({
   primary: { color: colors.white },
-  gold: { color: colors.text },
+  gold: { color: colors.brand900 },
   ghost: { color: '#334155' },
   danger: { color: colors.danger },
 });
 
 export const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.sand },
+  // Transparent so the page gradient behind it shows through.
+  screen: { flex: 1, backgroundColor: 'transparent' },
   screenContent: { padding: space.lg, gap: space.md, paddingBottom: space.xl * 2 },
   card: { backgroundColor: colors.white, borderRadius: radius.lg, padding: space.lg, borderWidth: 1, borderColor: '#0000000d', gap: space.sm },
   h1: { fontSize: 24, fontWeight: '700', color: colors.brand900 },
   h2: { fontSize: 17, fontWeight: '700', color: colors.brand900, marginTop: space.sm },
   body: { fontSize: 15, lineHeight: 22, color: colors.text },
   muted: { fontSize: 13, lineHeight: 18, color: colors.muted },
-  button: { minHeight: 46, borderRadius: radius.md, paddingHorizontal: space.lg, alignItems: 'center', justifyContent: 'center' },
+  button: { minHeight: 46, overflow: 'hidden', borderRadius: radius.md, paddingHorizontal: space.lg, alignItems: 'center', justifyContent: 'center' },
   buttonLedge: { position: 'absolute', left: 0, right: 0, bottom: 0, borderRadius: radius.md },
   buttonSmall: { minHeight: 36, paddingHorizontal: space.md },
   buttonText: { fontSize: 15, fontWeight: '600' },
@@ -290,16 +298,42 @@ export const styles = StyleSheet.create({
   dim: { opacity: 0.6 },
   field: { gap: 4 },
   label: { fontSize: 13, fontWeight: '600', color: '#334155' },
-  input: { minHeight: 46, borderWidth: 1, borderColor: '#cbd5e1', borderRadius: radius.md, paddingHorizontal: space.md, paddingVertical: space.sm, fontSize: 15, color: colors.text, backgroundColor: colors.white },
+  input: {
+    minHeight: 46,
+    borderWidth: 1,
+    borderColor: '#cbd5e1',
+    borderRadius: radius.md,
+    paddingHorizontal: space.md,
+    paddingVertical: space.sm,
+    fontSize: 15,
+    color: colors.text,
+    backgroundColor: colors.white,
+  },
   inputMultiline: { minHeight: 96, textAlignVertical: 'top' },
   hint: { fontSize: 12, color: colors.muted },
   chips: { gap: space.sm, paddingVertical: 2 },
-  chip: { paddingHorizontal: space.md, paddingVertical: 7, borderRadius: radius.pill, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.border },
+  chip: {
+    paddingHorizontal: space.md,
+    paddingVertical: 7,
+    borderRadius: radius.pill,
+    backgroundColor: colors.white,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   chipOn: { backgroundColor: colors.brand700, borderColor: colors.brand700 },
   chipText: { fontSize: 13, color: '#475569' },
   chipTextOn: { color: colors.white, fontWeight: '600' },
   toggle: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 36 },
-  checkbox: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: '#94a3b8', alignItems: 'center', justifyContent: 'center', backgroundColor: colors.white },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#94a3b8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white,
+  },
   checkboxOn: { backgroundColor: colors.brand700, borderColor: colors.brand700 },
   checkmark: { color: colors.white, fontSize: 14, fontWeight: '700' },
   badge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 3, borderRadius: radius.pill },
