@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, View } from 'react-native';
 
+import { GradientFill } from '@/components/Gradient';
 import { FadeInUp, FloatingShapes } from '@/components/motion';
 import { Body, Card, H2, Muted, Screen, styles } from '@/components/ui';
 import { usePrices } from '@/lib/prices';
@@ -27,6 +28,7 @@ export function ZamzamGuide() {
     <Screen>
       <FadeInUp>
         <View style={priceCard}>
+          <GradientFill name="brand" />
           <FloatingShapes />
           <View style={[styles.row, { gap: space.md }]}>
             <View style={drop}>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- One Ummah: a hand with the index finger raised, as when bearing witness in the shahada. -->
+  <g fill="currentColor" stroke="var(--line, #064e3b)" stroke-width="2.8" stroke-linejoin="round">
+    <!-- raised index finger -->
+    <path d="M42 50 V17 a7.5 7.5 0 0 1 15 0 V50 Z"/>
+    <!-- back of the hand -->
+    <path d="M33 47 h33 a9 9 0 0 1 9 9 v15 c0 10 -7 17 -16 18 h-15 c-8 0 -14 -6 -14 -14 v-19 a9 9 0 0 1 3 -9 Z"/>
+    <!-- curled middle, ring and little fingers -->
+    <rect x="57" y="47" width="21" height="11" rx="5.5"/>
+    <rect x="57" y="58" width="21" height="11" rx="5.5"/>
+    <rect x="57" y="69" width="19" height="11" rx="5.5"/>
+    <!-- thumb folded across the front -->
+    <path d="M27 66 c0 -4 3 -6 7 -6 h18 a5.5 5.5 0 0 1 0 11 h-18 c-4 0 -7 -2 -7 -5 Z"/>
+  </g>
+  <!-- fingernail -->
+  <path d="M45.5 15 a4 4 0 0 1 8 0 v3 h-8 Z" fill="var(--line, #064e3b)" opacity=".18"/>
+</svg>

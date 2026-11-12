@@ -5,6 +5,7 @@ import type { SessionUser } from "@/lib/auth";
 import { VEHICLE_TYPES } from "@/lib/constants";
 import { notFound } from "@/lib/errors";
 import { seatsLeft } from "@/lib/rules";
+import { NO_RATING, ratingsFor } from "./reviews";
 
 /** Filter that limits listings to ones the public may see. */
 export const PUBLIC_LISTING = { active: true, provider: { status: "APPROVED" } } as const;
@@ -58,8 +59,9 @@ export async function listPackages(query: URLSearchParams) {
     orderBy: PACKAGE_SORTS[sort] ?? PACKAGE_SORTS.date,
     take: 60,
   });
-  const booked = await seatsBooked(packages.map((p) => p.id));
-  return packages.map((p) => ({ ...p, seatsLeft: seatsLeft(p.seatsTotal, booked.get(p.id) ?? 0) }));
+  const ids = packages.map((p) => p.id);
+  const [booked, ratings] = await Promise.all([seatsBooked(ids), ratingsFor("package", ids)]);
+  return packages.map((p) => ({ ...p, ...(ratings.get(p.id) ?? NO_RATING), seatsLeft: seatsLeft(p.seatsTotal, booked.get(p.id) ?? 0) }));
 }
 
 /** Hidden listings stay visible to their owner (for previewing) and to admins. */
@@ -73,9 +75,16 @@ export async function getPackage(id: string, user: SessionUser | null) {
   if (!pkg) throw notFound("This package does not exist.");
   const { isPublic, visible } = canSee(pkg, user);
   if (!visible) throw notFound("This package does not exist.");
-  const booked = (await seatsBooked([id])).get(id) ?? 0;
+  const [booked, ratings] = await Promise.all([seatsBooked([id]), ratingsFor("package", [id])]);
   const { status: _status, ...provider } = pkg.provider;
-  return { ...pkg, provider, isPublic, departed: pkg.departureDate < new Date(), seatsLeft: seatsLeft(pkg.seatsTotal, booked) };
+  return {
+    ...pkg,
+    ...(ratings.get(id) ?? NO_RATING),
+    provider,
+    isPublic,
+    departed: pkg.departureDate < new Date(),
+    seatsLeft: seatsLeft(pkg.seatsTotal, booked.get(id) ?? 0),
+  };
 }
 
 export async function listServices(query: URLSearchParams) {
@@ -83,7 +92,7 @@ export async function listServices(query: URLSearchParams) {
   const type = query.get("type") ?? "";
   const pax = Number(query.get("pax"));
 
-  return db.transportService.findMany({
+  const services = await db.transportService.findMany({
     where: {
       ...PUBLIC_LISTING,
       ...(q && {
@@ -101,6 +110,8 @@ export async function listServices(query: URLSearchParams) {
     orderBy: { priceCents: "asc" },
     take: 60,
   });
+  const ratings = await ratingsFor("transport", services.map((s) => s.id));
+  return services.map((s) => ({ ...s, ...(ratings.get(s.id) ?? NO_RATING) }));
 }
 
 export async function getService(id: string, user: SessionUser | null) {
@@ -112,5 +123,6 @@ export async function getService(id: string, user: SessionUser | null) {
   const { isPublic, visible } = canSee(service, user);
   if (!visible) throw notFound("This service does not exist.");
   const { status: _status, ...provider } = service.provider;
-  return { ...service, provider, isPublic };
+  const rating = (await ratingsFor("transport", [id])).get(id) ?? NO_RATING;
+  return { ...service, ...rating, provider, isPublic };
 }

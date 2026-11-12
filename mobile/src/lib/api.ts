@@ -14,6 +14,9 @@ import type {
   Post,
   PostDetail,
   Provider,
+  Review,
+  ReviewKind,
+  ReviewList,
   ProviderBooking,
   ProviderDashboard,
   Service,
@@ -68,7 +71,7 @@ export function createApi(config: Config) {
         body: body ? JSON.stringify(body) : undefined,
       });
     } catch {
-      throw new ApiError(0, 'Could not reach My Ummah. Check your internet connection and try again.');
+      throw new ApiError(0, 'Could not reach One Ummah. Check your internet connection and try again.');
     }
 
     const data = await res.json().catch(() => null);
@@ -107,6 +110,11 @@ export function createApi(config: Config) {
     services: (filters: { q?: string; type?: string; pax?: string } = {}) => get<Service[]>(`/transport${queryString(filters)}`),
     service: (serviceId: string) => get<Service>(`/transport/${id(serviceId)}`),
     bookTransport: (serviceId: string, body: Body) => post<{ id: string }>(`/transport/${id(serviceId)}/book`, body),
+
+    reviews: (kind: ReviewKind, listingId: string) => get<ReviewList>(`/reviews/${kind}/${id(listingId)}`),
+    saveReview: (kind: ReviewKind, listingId: string, body: { rating: number; comment: string }) =>
+      post<Review>(`/reviews/${kind}/${id(listingId)}`, body),
+    deleteReview: (reviewId: string) => del<{ deleted: boolean }>(`/reviews/${id(reviewId)}`),
 
     myBookings: () => get<MyBookings>('/bookings'),
     setBookingStatus: (kind: 'package' | 'transport', bookingId: string, to: string) =>

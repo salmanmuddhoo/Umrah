@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
-const KEY = 'my_ummah_token';
+const KEY = 'one_ummah_token';
 
 /**
  * Where the sign-in token lives between app launches: the Keychain on iOS and

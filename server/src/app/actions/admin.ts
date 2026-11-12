@@ -70,3 +70,9 @@ export async function saveGuidePrices(_prev: FormState, fd: FormData): Promise<F
   revalidatePath("/admin/prices");
   return { ok: "Saved. The app shows the new prices the next time it is opened." };
 }
+
+export async function deleteReviewAsAdmin(reviewId: string) {
+  await requireAdmin();
+  await db.review.deleteMany({ where: { id: reviewId } });
+  revalidatePath("/admin/reviews");
+}

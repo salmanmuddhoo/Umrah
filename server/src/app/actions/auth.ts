@@ -17,7 +17,7 @@ export async function login(_prev: FormState, fd: FormData): Promise<FormState> 
     if (err instanceof ApiError) return { error: err.message };
     throw err;
   }
-  if (user.role !== "ADMIN") return { error: "This console is for platform administrators. Please use the My Ummah app." };
+  if (user.role !== "ADMIN") return { error: "This console is for platform administrators. Please use the One Ummah app." };
 
   await createSession(user.id);
   redirect(safeNext(str(input, "next"), "/admin"));

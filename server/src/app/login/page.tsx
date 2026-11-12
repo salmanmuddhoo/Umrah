@@ -24,7 +24,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         </Field>
         <SubmitButton className="btn-primary w-full">Sign in</SubmitButton>
       </ActionForm>
-      <p className="muted mt-4 text-center">Pilgrims and providers sign in through the My Ummah mobile app.</p>
+      <p className="muted mt-4 text-center">Pilgrims and providers sign in through the One Ummah mobile app.</p>
     </div>
   );
 }

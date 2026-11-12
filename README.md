@@ -1,4 +1,4 @@
-# My Ummah
+# One Ummah
 
 A mobile app (Android and iOS) where pilgrims book Umrah packages and transport, learn how to perform Umrah, and talk to each other. Umrah operators and transport companies manage their listings and bookings inside the same app. The platform earns a commission on every confirmed booking.
 
@@ -17,6 +17,7 @@ server/   The API the app talks to, plus the platform owner's admin console (web
 | Umrah → Guides → How to perform Umrah | Ihram, tawaf, sa'i and halq step by step, with duas in Arabic, transliteration and meaning. Bundled in the app, so it works offline | Everyone |
 | Umrah → Guides → Visa | Each type of visa with its cost, how to apply step by step, and links to the official Saudi sources | Everyone |
 | Umrah → Guides → Zamzam | Where to buy Zamzam water at Jeddah and Madinah airports, what it costs, and the rules for taking it home | Everyone |
+| Package and transport pages → Reviews | Star rating and comment, one per person per listing, editable and deletable. Reviews from people whose booking the provider accepted are marked “Verified booking”. Cards show the average rating | Everyone (sign in to review) |
 | Planner (middle tab) | A personal trip plan: dates, travellers, notes, a countdown, and a checklist for every stage of the trip that starts pre-filled and can be ticked, added to and trimmed | Signed-in users |
 | Community | Topics, posts, up/down votes and threaded replies | Everyone (sign in to post) |
 | Account → Sign in / sign up | Email address or phone number → 6-digit code (by email, or WhatsApp for phone numbers) → choose a 4-digit PIN. The PIN is asked for every time the app is opened | Everyone |
@@ -24,9 +25,11 @@ server/   The API the app talks to, plus the platform owner's admin console (web
 | Account → Become a service provider | One button for every kind of provider: choose the service you offer (Umrah packages, transport, hotels, catering, guides, other), then give your company details | Everyone |
 | Account → Provider dashboard | Earnings, listings (create / edit / hide), incoming bookings (confirm / decline / complete), company profile | Approved providers |
 
+The logo is a hand with the index finger raised, as when bearing witness in the shahada. Its source drawing is `mobile/assets/brand/logo-mark.svg`; the app icon, Android adaptive and themed icons, splash screen, favicon and in-app logo are all generated from it.
+
 The bottom bar has five tabs: Home, Umrah, Planner, Community, Account. The selected tab's icon springs up into a raised bubble. Inside Umrah, a switch separates **Services** (things you book) from **Guides** (things you read).
 
-The app is emerald green on very light green surfaces with gold highlights, and banners carry a tiled eight-pointed-star pattern (colours in `mobile/src/theme.ts`; the admin console matches). Cards and sections animate in, lists load behind pulsing placeholders, banners have slowly drifting shapes, progress bars fill, buttons respond to touch, and the ad banner rotates on its own. All motion switches off when the phone is set to reduce motion.
+The app is emerald green and gold, built on two-colour gradients: headers, banners and primary buttons blend deep emerald into teal, gold buttons blend two golds, and page backgrounds blend light green into light gold. Banners also carry a tiled eight-pointed-star pattern. Colours and gradients live in `mobile/src/theme.ts` (the admin console matches), and a test checks text stays readable at both ends of every gradient. Cards and sections animate in, lists load behind pulsing placeholders, banners have slowly drifting shapes, progress bars fill, buttons respond to touch, and the ad banner rotates on its own. All motion switches off when the phone is set to reduce motion.
 
 ### Adding a new kind of service provider
 
@@ -40,7 +43,7 @@ The Zamzam price and the cost of each visa type are short pieces of text you edi
 
 The app uses the phone's own Umm al-Qura calendar (the one Saudi Arabia publishes). On a phone without it, an arithmetic Islamic calendar is used instead, which can be a day out. The real start of a month depends on the moon being sighted, so treat the date as a guide.
 
-The platform owner's back office is a small web console served by `server/` at `/admin`: revenue, commission owed per provider, approving or suspending providers, setting commission rates, editing the prices quoted in the guides, and managing the Home tab's advertising.
+The platform owner's back office is a small web console served by `server/` at `/admin`: revenue, commission owed per provider, approving or suspending providers, setting commission rates, editing the prices quoted in the guides, managing the Home tab's advertising, and removing inappropriate reviews.
 
 ### How the money works
 
@@ -104,8 +107,8 @@ How sign-in is protected:
 ## Tests
 
 ```bash
-cd server && npm test    # 186 tests: business rules, validation, API routing, sign-in (codes, PINs, lockout), advertising, provider applications, the planner, guide prices, and every service against a throwaway SQLite database
-cd mobile && npm test    # 232 tests: API client, validation, formatting, the Hijri calendar, sign-in flow, PIN pad, app lock, Home, ad banner, animations, guides and prices, planner, provider application
+cd server && npm test    # 203 tests: business rules, validation, API routing, sign-in (codes, PINs, lockout), advertising, reviews, provider applications, the planner, guide prices, and every service against a throwaway SQLite database
+cd mobile && npm test    # 277 tests: API client, validation, formatting, the Hijri calendar, sign-in flow, PIN pad, app lock, Home, ad banner, animations, guides and prices, planner, provider application, reviews, colour contrast
 ```
 
 Both suites, plus lint and type checks, run on every pull request and on `production` through GitHub Actions (`.github/workflows/ci.yml`).
@@ -140,7 +143,7 @@ Pull requests into `production` get a quicker verification build, so a change th
 
 3. Add this **variable**: `API_URL` = the `https://` address of your deployed server.
 
-The version shown to users comes from `version` in `mobile/app.json`; the Play Store build number is the workflow run number, so it rises on its own. The app identifier is `com.myummah.app` (`mobile/app.json`) — change it before the first Play upload if you want a different one, because it cannot be changed afterwards.
+The version shown to users comes from `version` in `mobile/app.json`; the Play Store build number is the workflow run number, so it rises on its own. The app identifier is `com.oneummah.app` (`mobile/app.json`) — change it before the first Play upload if you want a different one, because it cannot be changed afterwards.
 
 ### iOS
 

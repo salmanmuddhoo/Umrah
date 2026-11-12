@@ -11,7 +11,7 @@ const fee = (total, pct) => Math.round((total * pct) / 100);
 async function main() {
   if (process.env.NODE_ENV === "production") throw new Error("Refusing to seed a production database.");
 
-  for (const model of ["planItem", "plan", "ad", "verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
+  for (const model of ["review", "planItem", "plan", "ad", "verificationCode", "vote", "comment", "post", "packageBooking", "transportBooking", "package", "transportService", "provider", "user", "setting"]) {
     await db[model].deleteMany();
   }
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
@@ -206,6 +206,15 @@ async function main() {
   });
   await db.transportBooking.create({
     data: { serviceId: airport.id, userId: aisha.id, pickupAt: inDays(35), pickupLocation: "JED Terminal 1 arrivals", passengers: 2, contactPhone: "+44 7700 900123", notes: "Flight SV112", totalCents: 7500, commissionCents: fee(7500, 10), status: "CONFIRMED" },
+  });
+
+  await db.review.createMany({
+    data: [
+      { userId: aisha.id, packageId: economy.id, rating: 5, comment: "Everything was organised from start to finish. The guide made our first Umrah calm and meaningful." },
+      { userId: yusuf.id, packageId: economy.id, rating: 4, comment: "Good value and a caring group leader. The Makkah hotel was a bit further from the Haram than we hoped." },
+      { userId: yusuf.id, packageId: family.id, rating: 5, comment: "The children's programme in Madinah was wonderful." },
+      { userId: aisha.id, serviceId: airport.id, rating: 5, comment: "Driver was waiting at arrivals with a sign and helped with all our bags." },
+    ],
   });
 
   const post = async (author, topic, title, body, comments = []) => {

@@ -1,20 +1,21 @@
 {
   "expo": {
-    "name": "My Ummah",
-    "slug": "my-ummah",
+    "name": "One Ummah",
+    "slug": "one-ummah",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myummah",
+    "scheme": "oneummah",
     "userInterfaceStyle": "light",
     "ios": {
-      "bundleIdentifier": "com.myummah.app",
+      "bundleIdentifier": "com.oneummah.app",
       "supportsTablet": true
     },
     "android": {
-      "package": "com.myummah.app",
+      "package": "com.oneummah.app",
       "adaptiveIcon": {
         "backgroundColor": "#047857",
+        "backgroundImage": "./assets/images/android-icon-background.png",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       }
@@ -29,9 +30,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#047857",
+          "backgroundColor": "#064e3b",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 120
+          "imageWidth": 140
         }
       ]
     ],

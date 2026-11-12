@@ -1,4 +1,4 @@
-/** Shapes returned by the My Ummah API (server/src/api/routes.ts). Dates arrive as ISO strings. */
+/** Shapes returned by the One Ummah API (server/src/api/routes.ts). Dates arrive as ISO strings. */
 
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
 /** 'UMRAH', 'TRANSPORT', or any other kind of service listed in PROVIDER_TYPES. */
@@ -44,7 +44,9 @@ export type PackageBase = {
   incZiyarah: boolean;
   active: boolean;
 };
-export type Package = PackageBase & { provider: PublicProvider; seatsLeft: number; isPublic?: boolean; departed?: boolean };
+/** Average star rating (to one decimal, null when unrated) and how many reviews it is based on. */
+export type Rating = { ratingAverage: number | null; ratingCount: number };
+export type Package = PackageBase & Rating & { provider: PublicProvider; seatsLeft: number; isPublic?: boolean; departed?: boolean };
 export type MyPackage = PackageBase & { seatsBooked: number };
 
 export type ServiceBase = {
@@ -58,7 +60,7 @@ export type ServiceBase = {
   priceCents: number;
   active: boolean;
 };
-export type Service = ServiceBase & { provider: PublicProvider; isPublic?: boolean };
+export type Service = ServiceBase & Rating & { provider: PublicProvider; isPublic?: boolean };
 export type MyService = ServiceBase & { bookingCount: number };
 
 export type MyPackageBooking = {
@@ -156,3 +158,18 @@ export type PlanItem = { id: string; planId: string; stage: string; text: string
 type PlanBase = { id: string; title: string; departDate: string | null; returnDate: string | null; travellers: number; notes: string };
 export type PlanSummary = PlanBase & { itemCount: number; doneCount: number };
 export type Plan = PlanBase & { items: PlanItem[] };
+
+export type ReviewKind = 'package' | 'transport';
+export type Review = {
+  id: string;
+  rating: number;
+  comment: string;
+  /** First name only. */
+  authorName: string;
+  /** The reviewer had a booking the provider accepted. */
+  verified: boolean;
+  /** Written by the person viewing. */
+  mine: boolean;
+  createdAt: string;
+};
+export type ReviewList = Rating & { reviews: Review[] };

@@ -95,10 +95,10 @@ describe('PlanScreen', () => {
   });
 
   it('unticks it again if the server could not save', async () => {
-    api.updatePlanItem.mockRejectedValue(new ApiError(0, 'Could not reach My Ummah.'));
+    api.updatePlanItem.mockRejectedValue(new ApiError(0, 'Could not reach One Ummah.'));
     await render(<PlanScreen />);
     await fireEvent.press(await screen.findByRole('checkbox', { name: 'Book a package' }));
-    expect(await screen.findByText('Could not reach My Ummah.')).toBeTruthy();
+    expect(await screen.findByText('Could not reach One Ummah.')).toBeTruthy();
     expect(screen.getByText('1 of 3 done')).toBeTruthy();
   });
 

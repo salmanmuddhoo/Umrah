@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { GradientFill } from '@/components/Gradient';
 import { FadeInUp } from '@/components/motion';
 import { Chips } from '@/components/ui';
 import { GuideContent } from '@/features/GuideContent';
@@ -43,6 +44,7 @@ export default function UmrahScreen() {
                 accessibilityState={{ selected }}
                 onPress={() => open(firstSection(g.value))}
                 style={[s.option, selected && s.optionOn]}>
+                {selected ? <GradientFill name="brand" /> : null}
                 <Text style={[s.optionText, selected && s.optionTextOn]}>{g.label}</Text>
               </Pressable>
             );
@@ -61,7 +63,7 @@ export default function UmrahScreen() {
 const s = StyleSheet.create({
   bar: { backgroundColor: colors.white, paddingHorizontal: space.lg, paddingVertical: space.md, gap: space.md, borderBottomWidth: 1, borderBottomColor: colors.border },
   switch: { flexDirection: 'row', backgroundColor: colors.sand, borderRadius: radius.md, padding: 4, gap: 4 },
-  option: { flex: 1, minHeight: 40, borderRadius: radius.md - 2, alignItems: 'center', justifyContent: 'center' },
+  option: { flex: 1, minHeight: 40, overflow: 'hidden', borderRadius: radius.md - 2, alignItems: 'center', justifyContent: 'center' },
   optionOn: { backgroundColor: colors.brand700 },
   optionText: { fontSize: 15, fontWeight: '700', color: colors.muted },
   optionTextOn: { color: colors.white },

@@ -24,6 +24,8 @@ export const pkg: Package = {
   active: true,
   provider,
   seatsLeft: 37,
+  ratingAverage: 4.5,
+  ratingCount: 12,
 };
 
 export const service: Service = {
@@ -37,6 +39,8 @@ export const service: Service = {
   priceCents: 7_550,
   active: true,
   provider,
+  ratingAverage: null,
+  ratingCount: 0,
 };
 
 export const user: User = { id: 'u1', name: 'Aisha Rahman', email: 'aisha@example.com', phone: null, role: 'PILGRIM', provider: null };

@@ -4,7 +4,10 @@ import { ScrollView, StyleSheet, Text, View, type NativeScrollEvent, type Native
 import type { Ad } from '@/lib/types';
 import { colors, radius, space } from '@/theme';
 
+import { GradientFill } from './Gradient';
 import { FloatingShapes, PressableScale, useReduceMotion } from './motion';
+
+const GRADIENT_FOR: Record<string, 'brand' | 'goldSoft' | 'night'> = { brand: 'brand', gold: 'goldSoft', night: 'night' };
 
 const THEMES: Record<string, { bg: string; fg: string; soft: string; button: string; buttonText: string; shape: string; pattern: string }> = {
   brand: { bg: colors.brand700, fg: colors.white, soft: colors.brand100, button: colors.gold400, buttonText: colors.brand900, shape: '#ffffff14', pattern: colors.patternGold },
@@ -55,6 +58,7 @@ export function AdCarousel({ ads, onPress, intervalMs = 5000 }: { ads: Ad[]; onP
               disabled={!linked}
               onPress={() => onPress(ad)}
               style={[s.card, { width: width || undefined, backgroundColor: t.bg }]}>
+              <GradientFill name={GRADIENT_FOR[ad.theme] ?? 'brand'} />
               <FloatingShapes color={t.shape} pattern={t.pattern} />
               <Text style={[s.sponsor, { color: t.soft }]}>SPONSORED · {ad.advertiser.toUpperCase()}</Text>
               <Text style={[s.headline, { color: t.fg }]} numberOfLines={2}>

@@ -53,7 +53,7 @@ export default function ProviderDashboard() {
       <Card style={{ marginTop: 8 }}>
         <H2>How billing works</H2>
         <Body>
-          Listing is free. My Ummah charges {commissionRate}% commission on each booking you confirm. The rate is fixed when the pilgrim
+          Listing is free. One Ummah charges {commissionRate}% commission on each booking you confirm. The rate is fixed when the pilgrim
           books, and cancelled bookings are never charged.
         </Body>
       </Card>

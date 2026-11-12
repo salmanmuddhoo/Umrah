@@ -70,7 +70,7 @@ export function VisaGuide() {
       {VISA_OFFICIAL_LINKS.map((link) => (
         <Button key={link.url} title={link.label} variant="ghost" onPress={() => void Linking.openURL(link.url)} />
       ))}
-      <Muted>These open in your browser. My Ummah is not affiliated with the Saudi authorities and does not issue visas.</Muted>
+      <Muted>These open in your browser. One Ummah is not affiliated with the Saudi authorities and does not issue visas.</Muted>
     </Screen>
   );
 }

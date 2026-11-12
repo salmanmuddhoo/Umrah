@@ -5,7 +5,9 @@ import { date, money, plural } from '@/lib/format';
 import type { Package } from '@/lib/types';
 import { colors, radius, space } from '@/theme';
 
+import { GradientFill } from './Gradient';
 import { PressableScale } from './motion';
+import { RatingSummary } from './Reviews';
 import { Badge, Muted, Stars, styles } from './ui';
 
 export function PackageCard({ pkg, onPress }: { pkg: Package; onPress: () => void }) {
@@ -13,10 +15,12 @@ export function PackageCard({ pkg, onPress }: { pkg: Package; onPress: () => voi
   return (
     <PressableScale accessibilityRole="button" accessibilityLabel={`${pkg.title}, ${money(pkg.priceCents)} per person`} onPress={onPress} style={card}>
       <View style={head}>
+        <GradientFill name="brand" />
         <Text style={{ color: colors.brand200, fontSize: 12 }}>
           {pkg.durationDays} days · from {pkg.departureCity}
         </Text>
         <Text style={{ color: colors.white, fontSize: 17, fontWeight: '600' }}>{pkg.title}</Text>
+        <RatingSummary average={pkg.ratingAverage} count={pkg.ratingCount} light />
       </View>
       <View style={{ padding: space.lg, gap: space.sm }}>
         <Text style={styles.body}>
@@ -50,4 +54,4 @@ export function PackageCard({ pkg, onPress }: { pkg: Package; onPress: () => voi
 }
 
 const card = { backgroundColor: colors.white, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: '#0000000d' } as const;
-const head = { backgroundColor: colors.brand700, paddingHorizontal: space.lg, paddingVertical: space.md, gap: 2 } as const;
+const head = { overflow: 'hidden', backgroundColor: colors.brand700, paddingHorizontal: space.lg, paddingVertical: space.md, gap: 2 } as const;

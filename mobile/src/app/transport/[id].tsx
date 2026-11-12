@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
+import { RatingSummary, Reviews } from '@/components/Reviews';
 import { Body, Button, Card, H1, H2, Input, Muted, Notice, QueryState, Screen, styles } from '@/components/ui';
 import { errorMessage } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
@@ -47,6 +48,7 @@ export default function ServiceScreen() {
     <Screen refreshing={refreshing} onRefresh={reload}>
       {service.isPublic === false ? <Notice tone="warn">Preview only — pilgrims cannot see this service yet.</Notice> : null}
       <H1>{service.title}</H1>
+      <RatingSummary average={service.ratingAverage} count={service.ratingCount} />
       <Muted>by {service.provider.companyName}</Muted>
 
       <Card>
@@ -96,6 +98,12 @@ export default function ServiceScreen() {
           </>
         )}
       </Card>
+
+      {service.isPublic !== false ? (
+        <View style={{ marginTop: 8 }}>
+          <Reviews kind="transport" listingId={service.id} canReview={user?.provider?.id !== service.provider.id} onChange={reload} />
+        </View>
+      ) : null}
     </Screen>
   );
 }

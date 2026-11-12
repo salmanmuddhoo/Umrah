@@ -13,7 +13,7 @@ export default function AccountScreen() {
   if (!user) {
     return (
       <Screen>
-        <H1>Welcome to My Ummah</H1>
+        <H1>Welcome to One Ummah</H1>
         <Body>Sign in to book packages and transport, keep track of your bookings and join the community.</Body>
         <Button title="Sign in or create an account" onPress={() => router.push('/login')} />
         <Muted>Use your email address or phone number. We send a code by email or WhatsApp, then you choose a 4-digit PIN.</Muted>
@@ -56,7 +56,7 @@ function ProviderInvite() {
   return (
     <Card style={{ marginTop: 16, backgroundColor: colors.brand50 }}>
       <Text style={{ fontSize: 16, fontWeight: '700', color: colors.brand900 }}>Do you serve pilgrims?</Text>
-      <Muted>Umrah operators, transport, hotels, catering, guides and more can list with My Ummah for free. Choose the service you offer and apply.</Muted>
+      <Muted>Umrah operators, transport, hotels, catering, guides and more can list with One Ummah for free. Choose the service you offer and apply.</Muted>
       <Button title="Become a service provider" variant="gold" onPress={() => router.push('/provider/apply')} />
     </Card>
   );

@@ -3,6 +3,8 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import { AdCarousel } from '@/components/AdCarousel';
+import { GradientFill } from '@/components/Gradient';
+import { Logo } from '@/components/Logo';
 import { FadeInUp, FloatingShapes, PressableScale } from '@/components/motion';
 import { PackageCard } from '@/components/PackageCard';
 import { Button, H2, Screen, styles } from '@/components/ui';
@@ -49,8 +51,12 @@ export default function HomeScreen() {
     <Screen refreshing={refreshing} onRefresh={reload}>
       <FadeInUp>
         <View style={hero}>
+          <GradientFill name="brand" />
           <FloatingShapes />
-          <Text style={{ color: colors.gold400, fontSize: 20 }}>لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Logo size={44} />
+            <Text style={{ color: colors.gold400, fontSize: 20 }}>لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ</Text>
+          </View>
           <Text accessibilityRole="header" style={{ color: colors.white, fontSize: 22, fontWeight: '700' }}>
             {user ? `Assalamu alaikum, ${user.name.split(' ')[0]}` : 'Assalamu alaikum'}
           </Text>
@@ -62,6 +68,7 @@ export default function HomeScreen() {
         <FadeInUp delay={60}>
           <View accessible accessibilityLabel={`Today is ${today.hijriText}, ${today.gregorianText}`} style={dateCard}>
             <View style={dateBadge}>
+              <GradientFill name="brand" />
               <Text style={{ color: colors.white, fontSize: 24, fontWeight: '700', lineHeight: 28 }}>{today.hijriDay}</Text>
             </View>
             <View style={{ flex: 1 }}>
@@ -114,7 +121,7 @@ export default function HomeScreen() {
 
 const hero = { backgroundColor: colors.brand700, borderRadius: radius.lg, padding: space.lg, gap: space.sm, overflow: 'hidden' } as const;
 const dateCard = { flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.white, borderRadius: radius.lg, padding: space.md, borderWidth: 1, borderColor: '#0000000d' } as const;
-const dateBadge = { width: 52, height: 52, borderRadius: 14, backgroundColor: colors.brand700, alignItems: 'center', justifyContent: 'center' } as const;
+const dateBadge = { width: 52, height: 52, borderRadius: 14, overflow: 'hidden', backgroundColor: colors.brand700, alignItems: 'center', justifyContent: 'center' } as const;
 const grid = { flexDirection: 'row', flexWrap: 'wrap', gap: space.md } as const;
 const tile = { backgroundColor: colors.white, borderRadius: radius.lg, padding: space.lg, gap: 4, borderWidth: 1, borderColor: '#0000000d', minHeight: 124 } as const;
 const iconWrap = { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.brand50, alignItems: 'center', justifyContent: 'center', marginBottom: 4 } as const;
